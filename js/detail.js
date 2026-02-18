@@ -243,7 +243,7 @@ function renderMainPreview(view) {
     .attr('y', -height / 2 + 25)
     .attr('text-anchor', 'middle')
     .attr('fill', 'rgba(99,130,255,0.5)')
-    .attr('font-size', '12px')
+    .attr('font-size', '11px')
     .attr('font-family', 'JetBrains Mono, monospace')
-    .text(`D3.js + d3-geo-projection: Nicolosi Globular · R=${view === 'double' ? 220 : 250}px`);
+    .text(`D3.js + d3-geo-projection: +proj=nicol +lon_0=${hemispheres[0].lon0} · R=${view === 'double' ? 220 : 250}px`);
 }
