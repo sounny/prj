@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRJ — Coordinate Reference Systems Clearinghouse</title>
+  <meta name="description" content="A comprehensive clearinghouse for GIS projection files (.prj), WKT definitions, and spatial coordinate reference system reference materials. Download projection files and explore interactive visualizations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon">⬡</span>
+        <span class="nav-logo-text">PRJ</span>
+        <span class="nav-logo-sub">CRS Clearinghouse</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Browse</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="https://github.com/sounny/prj" class="nav-link nav-link-gh" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-badge">Open GIS Resource</div>
+      <h1 class="hero-title">Coordinate Reference<br>Systems Clearinghouse</h1>
+      <p class="hero-sub">Download <code>.prj</code> files, explore WKT definitions, and visualize map projections — all in one place. Built for cartographers, GIS analysts, and spatial data scientists.</p>
+      <div class="hero-search-wrap">
+        <input type="search" id="hero-search" class="hero-search" placeholder="Search projections… e.g. Nicolosi, Mercator, UTM" aria-label="Search projections" />
+        <span class="hero-search-icon">⌕</span>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num" id="stat-count">1</span><span class="hero-stat-label">Projections</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">7</span><span class="hero-stat-label">Format Types</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">Free</span><span class="hero-stat-label">Always Open</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter Bar -->
+  <section class="filter-bar">
+    <div class="container filter-inner">
+      <div class="filter-chips" id="filter-chips">
+        <button class="chip chip-active" data-filter="all">All</button>
+        <button class="chip" data-filter="globular">Globular</button>
+        <button class="chip" data-filter="pseudoconical">Pseudoconical</button>
+        <button class="chip" data-filter="compromise">Compromise</button>
+        <button class="chip" data-filter="conformal">Conformal</button>
+        <button class="chip" data-filter="equal-area">Equal-Area</button>
+        <button class="chip" data-filter="equidistant">Equidistant</button>
+      </div>
+      <div class="sort-wrap">
+        <label for="sort-select" class="sort-label">Sort:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="name">Name A–Z</option>
+          <option value="year">Year (oldest)</option>
+          <option value="epsg">EPSG</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <main class="container main-grid-wrap">
+    <div class="proj-grid" id="proj-grid">
+      <!-- Cards injected by JS -->
+    </div>
+    <div class="no-results hidden" id="no-results">
+      <p>No projections match your search. <button class="link-btn" id="clear-search">Clear search</button></p>
+    </div>
+  </main>
+
+  <!-- About -->
+  <section class="about-section" id="about">
+    <div class="container about-inner">
+      <div class="about-text">
+        <h2>What is PRJ?</h2>
+        <p>PRJ is an open clearinghouse for spatial coordinate reference system (CRS) definitions. Every entry provides multiple machine-readable and human-readable formats: OGC WKT, WKT-2, ESRI WKT, PROJ strings, <code>.prj</code> files, and JSON — alongside scholarly context, mathematical descriptions, and interactive D3.js previews.</p>
+        <p>The project is hosted on GitHub Pages and contributions are welcome. If you have a projection definition to add, open a pull request.</p>
+      </div>
+      <div class="about-formats">
+        <h3>Supported Formats</h3>
+        <ul class="format-list">
+          <li><span class="fmt-badge fmt-wkt1">WKT-1</span> OGC Well-Known Text (ISO 19125)</li>
+          <li><span class="fmt-badge fmt-wkt2">WKT-2</span> ISO 19162:2019 Well-Known Text</li>
+          <li><span class="fmt-badge fmt-esri">ESRI</span> ESRI Well-Known Text</li>
+          <li><span class="fmt-badge fmt-prj">.PRJ</span> Shapefile Projection File</li>
+          <li><span class="fmt-badge fmt-proj">PROJ</span> PROJ String</li>
+          <li><span class="fmt-badge fmt-json">JSON</span> GeoJSON CRS Object</li>
+          <li><span class="fmt-badge fmt-html">HTML</span> Human-Readable Description</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>PRJ Clearinghouse · <a href="https://sounny.github.io" target="_blank" rel="noopener">sounny.github.io</a> · Open data, open source.</p>
+      <p class="footer-sub">Projection definitions sourced from PROJ, EPSG Registry, and USGS Professional Paper 1453.</p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
