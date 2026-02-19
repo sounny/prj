@@ -27,9 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderGrid() {
   let data = [...PROJECTIONS];
 
-  // Filter by classification
+  // Filter by classification or property
   if (activeFilter !== 'all') {
-    data = data.filter(p => p.classification.includes(activeFilter));
+    const propMap = { 'conformal':'conformal','equal-area':'equalArea','equidistant':'equidistant','compromise':'compromise' };
+    const propKey = propMap[activeFilter];
+    if (propKey) {
+      data = data.filter(p => p.properties?.[propKey]);
+    } else {
+      data = data.filter(p => p.classification.includes(activeFilter));
+    }
   }
 
   // Filter by search
@@ -72,7 +78,7 @@ function renderGrid() {
 
 function buildCard(proj, index) {
   const a = document.createElement('a');
-  a.href = `projections/${proj.id}.html`;
+  a.href = `projection.html?id=${proj.id}`;
   a.className = 'proj-card';
   a.style.animationDelay = `${index * 0.05}s`;
 
@@ -98,8 +104,8 @@ function buildCard(proj, index) {
       <div class="proj-card-tags">${tags}</div>
       <div class="proj-card-name">${proj.name}</div>
       <div class="proj-card-meta">
-        <span>📅 ${proj.year} CE</span>
-        <span>🔖 ${epsgStr}</span>
+        <span>📅 ${proj.year < 0 ? Math.abs(proj.year)+' BCE' : proj.year+' CE'}</span>
+        <span>🔖 ${proj.esriWKID ? 'ESRI:'+proj.esriWKID : (proj.epsg ? 'EPSG:'+proj.epsg : 'No EPSG')}</span>
       </div>
       <p class="proj-card-desc">${proj.description}</p>
     </div>
@@ -115,18 +121,55 @@ function buildCard(proj, index) {
   return a;
 }
 
-// ── D3 Card Preview (inline SVG, no external lib needed for simple globe) ──
+// ── D3 Card Preview ─────────────────────────────────────────────────────────
 function renderCardPreview(proj, svgEl) {
   if (!svgEl) return;
+  if (proj.id === 'nicolosi-globular') { drawNicolosiPreview(svgEl); return; }
+  if (proj.id === 'robinson')          { drawRobinsonPreview(svgEl);  return; }
+  // Try D3_MAP universal renderer
+  try {
+    const factory = typeof D3_MAP !== 'undefined' ? D3_MAP[proj.id] : null;
+    if (factory) { drawD3CardPreview(proj, svgEl, factory); return; }
+  } catch(e) {}
+  drawGenericGlobePreview(svgEl);
+}
 
-  // For Nicolosi: draw a simple hemisphere outline with graticule arcs
-  if (proj.id === 'nicolosi-globular') {
-    drawNicolosiPreview(svgEl);
-  } else if (proj.id === 'robinson') {
-    drawRobinsonPreview(svgEl);
-  } else {
-    drawGenericGlobePreview(svgEl);
-  }
+function drawD3CardPreview(proj, svgEl, factory) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 400, H = 240;
+  svgEl.setAttribute('viewBox', `-${W/2} -${H/2} ${W} ${H}`);
+  svgEl.innerHTML = '';
+  // Background
+  const bg = document.createElementNS(ns,'rect');
+  bg.setAttribute('x',-W/2); bg.setAttribute('y',-H/2);
+  bg.setAttribute('width',W); bg.setAttribute('height',H);
+  bg.setAttribute('fill','#060a12');
+  svgEl.appendChild(bg);
+  // D3 mini-map
+  const miniSvg = d3.select(svgEl);
+  const g = miniSvg.append('g').attr('transform','translate(0,0)');
+  let projection;
+  try { projection = factory(); } catch(e) { drawGenericGlobePreview(svgEl); return; }
+  const types = proj.classification||[];
+  let scale = 72;
+  if (types.includes('azimuthal')||types.includes('pseudoazimuthal')) scale = 78;
+  if (types.includes('conic')||types.includes('pseudoconical')) scale = 60;
+  try { projection.scale(scale).translate([0,0]); } catch(e) {}
+  const path = d3.geoPath().projection(projection);
+  // Sphere
+  try { g.append('path').datum({type:'Sphere'}).attr('d',path)
+    .attr('fill','#060d1f').attr('stroke','rgba(99,130,255,0.65)').attr('stroke-width','0.8'); } catch(e) {}
+  // Graticule
+  const grat = d3.geoGraticule().step([30,30]);
+  try { g.append('path').datum(grat()).attr('d',path)
+    .attr('fill','none').attr('stroke','rgba(99,130,255,0.15)').attr('stroke-width','0.4'); } catch(e) {}
+  // Label
+  const lbl = document.createElementNS(ns,'text');
+  lbl.setAttribute('x',0); lbl.setAttribute('y',H/2-8);
+  lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('fill','rgba(99,130,255,0.4)');
+  lbl.setAttribute('font-size','8'); lbl.setAttribute('font-family','JetBrains Mono, monospace');
+  lbl.textContent = `+proj=${proj.projAlias||proj.id}  ·  ${proj.year<0?Math.abs(proj.year)+' BCE':proj.year+' CE'}`;
+  svgEl.appendChild(lbl);
 }
 
 function drawNicolosiPreview(svgEl) {

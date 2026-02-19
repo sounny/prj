@@ -1,526 +1,661 @@
-/**
- * PRJ Clearinghouse — Projection Data Store
- * Each entry contains full CRS definitions in all supported formats.
- */
+/** PRJ Clearinghouse — Complete Projection Data (82 entries) */
+const P = (id,name,alt,yr,inv,epsg,esri,pal,d3m,cls,prop,dom,desc,epn,epr,dat,wu,pu,ref,sa) => ({
+  id,name,altNames:alt,year:yr,inventor:inv,epsg,esriWKID:esri,esriCompatible:!!esri,
+  projAlias:pal,d3Method:d3m,classification:cls,properties:prop,domain:dom,description:desc,
+  esriProjName:epn,esriParams:epr||[{name:'Central_Meridian',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  datum:dat||'WGS84',wikiUrl:wu,projUrl:pu,references:ref||[],seeAlso:sa||[]
+});
+
+const PROP = (c,e,q,m,p) => ({conformal:!!c,equalArea:!!e,equidistant:!!q,compromise:!!m,perspective:!!p});
+
 const PROJECTIONS = [
-  {
-    id: "nicolosi-globular",
-    name: "Nicolosi Globular",
-    altNames: ["Al-Biruni Globular", "Nicolosi's Globular"],
-    year: 1000,
-    inventor: "Abū Rayḥān al-Bīrūnī (reinvented by Giovanni Battista Nicolosi, 1660)",
-    epsg: null,
-    epsgNote: "Not registered in the EPSG Geodetic Parameter Dataset. This is a spherical, historical compromise projection.",
-    esriWKID: null,
-    esriNote: "Not natively supported in the ESRI Projection Engine. Identified by the name 'Nicolosi_Globular' in custom WKT definitions.",
-    projString: "+proj=nicol +lon_0=0 +x_0=0 +y_0=0 +R=6371000 +units=m +no_defs",
-    classification: ["globular", "pseudoconical", "compromise"],
-    properties: {
-      conformal: false,
-      equalArea: false,
-      equidistant: false,
-      compromise: true,
-      hemisphere: true,
-    },
-    domain: "Hemispheric (one hemisphere per map)",
-    sphere: "Spherical only (no ellipsoidal form)",
-    units: "Meters (projected); Degrees (geographic input)",
-    description: "The Nicolosi globular projection is a polyconic map projection invented around 1000 CE by the Persian polymath Abū Rayḥān al-Bīrūnī for celestial mapping. Reinvented in the Western world by Sicilian cartographer Giovanni Battista Nicolosi in 1660, it displays a single hemisphere within a circle. As a compromise projection, it preserves no single geometric property but achieves a visually balanced distribution of distortions. It reached peak use in the 19th century and is rarely employed today.",
-    history: `Abū Rayḥān Muḥammad ibn Aḥmad Al-Bīrūnī, foremost scholar of the Islamic Golden Age, invented the first recorded globular projection for celestial maps around the year 1000 CE. The projection entered European cartographic practice through a chain of reinventions: Roger Bacon (13th century), Petrus Apianus (16th century), and Georges Fournier (16th century) each developed related globular constructions. In 1660, Giovanni Battista Nicolosi, a Sicilian chaplain working in Rome, independently reinvented al-Biruni's projection as a modification of Fournier's first projection. It is unlikely Nicolosi was aware of al-Biruni's prior work. The projection became relatively common in the 19th century as the stereographic projection fell out of favor for hemispheric world maps, and continued in use into the early 20th century.`,
-    construction: `The construction is geometric and can be executed with compasses and straightedge. Given a bounding circle, the poles are placed at the top and bottom, and the central meridian is drawn as a vertical diameter. The equator is drawn as a horizontal diameter. Each remaining meridian is a circular arc through both poles, spaced equally along the equator. Each parallel is a circular arc from the left edge through the central meridian to the right edge, spaced equally along both the perimeter and the central meridian. The result closely resembles the azimuthal equidistant projection centered on the same point.`,
-    math: [
-      { label: "b", formula: "π / (2(λ−λ₀)) − 2(λ−λ₀) / π" },
-      { label: "c", formula: "2φ / π" },
-      { label: "d", formula: "(1 − c²) / (sin φ − c)" },
-      { label: "M", formula: "(b·sin φ / d − b/2) / (1 + b²/d²)" },
-      { label: "N", formula: "(d²·sin φ / b² + d/2) / (1 + d²/b²)" },
-      { label: "x", formula: "(π/2)·R · (M ± √(M² + cos²φ / (1 + b²/d²)))" },
-      { label: "y", formula: "(π/2)·R · (N ± √(N² − (d²/b²·sin²φ + d·sin φ − 1) / (1 + d²/b²)))" },
-    ],
-    specialCases: [
-      { condition: "λ − λ₀ = 0 (central meridian)", x: "0", y: "R·φ" },
-      { condition: "φ = 0 (equator)", x: "R·(λ−λ₀)", y: "0" },
-      { condition: "|λ−λ₀| = π/2 (boundary meridian)", x: "R·(λ−λ₀)·cos φ", y: "(π/2)·R·sin φ" },
-      { condition: "|φ| = π/2 (poles)", x: "0", y: "R·φ" },
-    ],
-    formats: {
-      wkt1_html: {
-        label: "WKT-1 (Human-Readable)",
-        description: "OGC Well-Known Text version 1 formatted for readability. Based on ISO 19125.",
-        content: `PROJCS["Nicolosi_Globular",
-  GEOGCS["GCS_Sphere",
-    DATUM["D_Sphere",
-      SPHEROID["Sphere", 6371000.0, 0.0]
-    ],
-    PRIMEM["Greenwich", 0.0],
-    UNIT["Degree", 0.0174532925199433]
-  ],
-  PROJECTION["Nicolosi_Globular"],
-  PARAMETER["Central_Meridian", 0.0],
-  PARAMETER["False_Easting", 0.0],
-  PARAMETER["False_Northing", 0.0],
-  UNIT["Meter", 1.0]
-]`,
-        humanReadable: [
-          ["Projection Name", "Nicolosi Globular"],
-          ["Geographic CRS", "GCS Sphere (Spherical Earth)"],
-          ["Datum", "D_Sphere"],
-          ["Spheroid", "Sphere — radius 6,371,000 m, flattening 0 (perfect sphere)"],
-          ["Prime Meridian", "Greenwich (0°)"],
-          ["Projection Method", "Nicolosi_Globular (pseudoconical, compromise)"],
-          ["Central Meridian", "0° (Greenwich)"],
-          ["False Easting", "0.0 m"],
-          ["False Northing", "0.0 m"],
-          ["Linear Unit", "Meter (1.0)"],
-          ["Angular Unit", "Degree (0.01745329…)"],
-        ]
-      },
-      wkt1_ogc: {
-        label: "OGC WKT-1",
-        description: "Machine-readable OGC WKT version 1 (ISO 19125 / GDAL format).",
-        content: `PROJCS["Nicolosi_Globular",GEOGCS["GCS_Sphere",DATUM["D_Sphere",SPHEROID["Sphere",6371000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Nicolosi_Globular"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`
-      },
-      wkt2_html: {
-        label: "WKT-2 (Human-Readable)",
-        description: "ISO 19162:2019 Well-Known Text version 2, formatted for readability.",
-        content: `PROJCRS["Nicolosi Globular",
-  BASEGEOGCRS["GCS Sphere",
-    DATUM["Sphere",
-      ELLIPSOID["Sphere", 6371000, 0,
-        LENGTHUNIT["metre", 1]]
-    ],
-    PRIMEM["Greenwich", 0,
-      ANGLEUNIT["degree", 0.0174532925199433]],
-    ID["EPSG", 4047]
-  ],
-  CONVERSION["Nicolosi Globular",
-    METHOD["Nicolosi Globular",
-      ID["PROJ", "nicol"]],
-    PARAMETER["Longitude of natural origin", 0,
-      ANGLEUNIT["degree", 0.0174532925199433],
-      ID["EPSG", 8802]],
-    PARAMETER["False easting", 0,
-      LENGTHUNIT["metre", 1],
-      ID["EPSG", 8806]],
-    PARAMETER["False northing", 0,
-      LENGTHUNIT["metre", 1],
-      ID["EPSG", 8807]]
-  ],
-  CS[Cartesian, 2],
-    AXIS["(E)", east,
-      ORDER[1],
-      LENGTHUNIT["metre", 1]],
-    AXIS["(N)", north,
-      ORDER[2],
-      LENGTHUNIT["metre", 1]]
-]`,
-        humanReadable: [
-          ["Standard", "ISO 19162:2019 (WKT-2)"],
-          ["Projected CRS Name", "Nicolosi Globular"],
-          ["Base Geographic CRS", "GCS Sphere (EPSG:4047 — GCS_Sphere)"],
-          ["Ellipsoid", "Sphere — semi-major axis 6,371,000 m, inverse flattening 0"],
-          ["Prime Meridian", "Greenwich (0°)"],
-          ["Conversion Method", "Nicolosi Globular (PROJ alias: nicol)"],
-          ["Central Meridian (lon_0)", "0° (Greenwich)"],
-          ["False Easting", "0 m"],
-          ["False Northing", "0 m"],
-          ["Coordinate System", "Cartesian 2D"],
-          ["Axis 1", "East (E), Order 1"],
-          ["Axis 2", "North (N), Order 2"],
-          ["Linear Unit", "Metre (1.0)"],
-        ]
-      },
-      wkt2_ogc: {
-        label: "OGC WKT-2",
-        description: "Machine-readable ISO 19162:2019 WKT-2.",
-        content: `PROJCRS["Nicolosi Globular",BASEGEOGCRS["GCS Sphere",DATUM["Sphere",ELLIPSOID["Sphere",6371000,0,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4047]],CONVERSION["Nicolosi Globular",METHOD["Nicolosi Globular",ID["PROJ","nicol"]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]]]`
-      },
-      esri_wkt: {
-        label: "ESRI WKT",
-        description: "⚠️ ArcGIS Compatibility Warning: Nicolosi Globular is NOT in the ESRI Projection Engine (PE) database. ArcGIS Pro and ArcMap will NOT recognize the PROJECTION[\"Nicolosi_Globular\"] keyword and will silently fall back to a default projection (typically Mercator). This string is provided for completeness and for use with software that accepts custom WKT. For ArcGIS users, see the workaround instructions in the .PRJ tab below.",
 
-        content: `PROJCS["Nicolosi_Globular",GEOGCS["GCS_Sphere",DATUM["D_Sphere",SPHEROID["Sphere",6371000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Nicolosi_Globular"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
-        humanReadable: [
-          ["Format", "ESRI WKT (Custom)"],
-          ["Projection Name", "Nicolosi_Globular"],
-          ["Geographic CRS", "GCS_Sphere"],
-          ["Datum", "D_Sphere"],
-          ["Spheroid Name", "Sphere"],
-          ["Semi-Major Axis", "6,371,000.0 m"],
-          ["Inverse Flattening", "0.0"],
-          ["Prime Meridian", "Greenwich (0.0°)"],
-          ["Projection Method", "Nicolosi_Globular"],
-          ["Central_Meridian", "0.0°"],
-          ["False_Easting", "0.0 m"],
-          ["False_Northing", "0.0 m"],
-          ["Linear Unit", "Meter (1.0)"],
-        ]
-      },
-      prj: {
-        label: ".PRJ",
-        description: "⚠️ ArcGIS Pro / ArcMap Limitation: ArcGIS will NOT correctly interpret this .prj file. The Nicolosi Globular projection is NOT registered in the ESRI Projection Engine database, so ArcGIS silently falls back to Mercator when it encounters the unrecognized PROJECTION[\"Nicolosi_Globular\"] keyword. This is a known ESRI limitation, not a file error.\n\n✅ Workaround for ArcGIS Pro: (1) In ArcGIS Pro, go to the Map Properties → Coordinate System tab; (2) Click 'Add Coordinate System' → 'Import Coordinate System' and select this .prj file; (3) ArcGIS will import the geographic CRS (GCS_Sphere) correctly, but the projection method will not apply; (4) Instead, use the PROJ string (+proj=nicol +lon_0=0 +R=6371000 +x_0=0 +y_0=0) in the 'Custom Projection' dialog via ArcGIS Pro's 'New Projected Coordinate System' tool.\n\n✅ Recommended Alternative: Use QGIS or any GDAL-based tool, which reads the PROJ string natively and supports Nicolosi Globular (+proj=nicol) out of the box.",
-        content: `PROJCS["Nicolosi_Globular",GEOGCS["GCS_Sphere",DATUM["D_Sphere",SPHEROID["Sphere",6371000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Nicolosi_Globular"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
-        filename: "nicolosi_globular.prj",
-        esriCompatible: false,
-        esriNote: "Not recognized by ESRI Projection Engine. Use PROJ string in QGIS or GDAL instead."
-      },
-      proj: {
-        label: "PROJ String",
-        description: "PROJ 4/6/9 projection string. Supported natively in PROJ 9.x via the +proj=nicol alias.",
-        content: `+proj=nicol +lon_0=0 +R=6371000 +x_0=0 +y_0=0 +units=m +no_defs`
-      },
-      json: {
-        label: "JSON / GeoJSON CRS",
-        description: "GeoJSON-compatible CRS object and a structured JSON representation of the projection parameters.",
-        content: `{
-  "type": "ProjectedCRS",
-  "name": "Nicolosi Globular",
-  "id": {
-    "authority": "PROJ",
-    "code": "nicol"
-  },
-  "baseGeographicCRS": {
-    "type": "GeographicCRS",
-    "name": "GCS Sphere",
-    "datum": {
-      "type": "GeodeticReferenceFrame",
-      "name": "Sphere",
-      "ellipsoid": {
-        "name": "Sphere",
-        "semiMajorAxis": 6371000.0,
-        "inverseFlattening": 0
-      }
-    },
-    "primeMeridian": {
-      "name": "Greenwich",
-      "longitude": 0
-    },
-    "coordinateSystem": {
-      "subtype": "ellipsoidal",
-      "axis": [
-        { "name": "Geodetic latitude", "abbreviation": "Lat", "direction": "north", "unit": "degree" },
-        { "name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east", "unit": "degree" }
-      ]
-    }
-  },
-  "conversion": {
-    "name": "Nicolosi Globular",
-    "method": {
-      "name": "Nicolosi Globular",
-      "projAlias": "nicol"
-    },
-    "parameters": [
-      { "name": "Longitude of natural origin", "value": 0, "unit": "degree" },
-      { "name": "False easting", "value": 0, "unit": "metre" },
-      { "name": "False northing", "value": 0, "unit": "metre" }
-    ]
-  },
-  "coordinateSystem": {
-    "subtype": "Cartesian",
-    "axis": [
-      { "name": "Easting", "abbreviation": "E", "direction": "east", "unit": "metre" },
-      { "name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre" }
-    ]
-  },
-  "projString": "+proj=nicol +lon_0=0 +R=6371000 +x_0=0 +y_0=0",
-  "metadata": {
-    "inventor": "Abū Rayḥān al-Bīrūnī",
-    "yearInvented": 1000,
-    "westernReinventor": "Giovanni Battista Nicolosi",
-    "yearReinvented": 1660,
-    "classification": ["pseudoconical", "globular", "compromise"],
-    "hemisphere": true,
-    "conformal": false,
-    "equalArea": false,
-    "equidistant": false
-  }
-}`
-      }
-    },
-    references: [
-      {
-        text: "Snyder, J.P. (1993). Flattening the Earth: Two Thousand Years of Map Projections. University of Chicago Press. p. 41.",
-        url: "https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html"
-      },
-      {
-        text: "Snyder, J.P. (1989). An Album of Map Projections. USGS Professional Paper 1453. p. 234.",
-        url: "https://pubs.usgs.gov/pp/1453/report.pdf"
-      },
-      {
-        text: "Keuning, J. (1955). The history of geographical map projections until 1600. Imago Mundi, 12, 20.",
-        url: "https://www.tandfonline.com/doi/abs/10.1080/03085695508592085"
-      },
-      {
-        text: "PROJ Contributors (2025). Nicolosi Globular — PROJ 9.7.1 Documentation.",
-        url: "https://proj.org/en/stable/operations/projections/nicol.html"
-      },
-      {
-        text: "Wikipedia: Nicolosi globular projection.",
-        url: "https://en.wikipedia.org/wiki/Nicolosi_globular_projection"
-      }
-    ],
-    seeAlso: ["Azimuthal Equidistant", "Stereographic", "Fournier Globular I"],
-    wikiUrl: "https://en.wikipedia.org/wiki/Nicolosi_globular_projection",
-    projUrl: "https://proj.org/en/stable/operations/projections/nicol.html",
-  },
+/* ─── CYLINDRICAL ──────────────────────────────────────────────────────────── */
+P('equirectangular','Equirectangular',['Plate Carrée','Geographic','Simple Cylindrical'],
+  120,'Marinus of Tyre',4087,54001,'eqc','geoEquirectangular',
+  ['cylindrical','equidistant'],PROP(0,0,1,0,0),'World',
+  'The simplest cylindrical map projection: meridians and parallels are equally spaced straight lines. When the standard parallel is the equator, it is called Plate Carrée. Widely used as a base layer and for raster data storage.',
+  'Plate_Carree',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Equirectangular_projection',
+  'https://proj.org/en/stable/operations/projections/eqc.html'),
 
-  // ── Robinson ──────────────────────────────────────────────────────────────
-  {
-    id: "robinson",
-    name: "Robinson",
-    altNames: ["Orthophanic Projection"],
-    year: 1963,
-    inventor: "Arthur H. Robinson",
-    epsg: null,
-    epsgNote: "Not registered in the EPSG dataset. The ESRI authority code 54030 is the de facto standard for the World Robinson CRS.",
-    esriWKID: 54030,
-    esriNote: "Fully supported in ESRI Projection Engine as WKID 54030 (World_Robinson). ArcGIS Pro and ArcMap will correctly apply this projection.",
-    projString: "+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0 +units=m +no_defs",
-    classification: ["pseudocylindrical", "compromise"],
-    properties: {
-      conformal: false,
-      equalArea: false,
-      equidistant: false,
-      compromise: true,
-      hemisphere: false,
-    },
-    domain: "World (whole-globe map)",
-    sphere: "Spherical only (no ellipsoidal form defined in original formulation)",
-    units: "Meters (projected); Degrees (geographic input)",
-    description: "The Robinson projection is a pseudocylindrical world map projection devised by Arthur H. Robinson in 1963. It is a compromise projection, preserving neither conformality nor equal area, but distributing distortions across the map in a visually balanced manner. Meridians curve gently and parallels are straight horizontal lines. The National Geographic Society used it as its standard world map projection from 1988 to 1998.",
-    history: `Arthur H. Robinson developed the projection in 1963 at the request of the Rand McNally cartographic company, which sought a world map projection with a pleasing aesthetic and acceptable distortion characteristics for general-purpose use. Robinson took an unusual approach: rather than beginning with equations, he manually tuned the visual shape of the projection until it looked right, then derived the mathematical table from that result. He published the tabular formulation in 1974.\n\nThe National Geographic Society adopted the Robinson projection in 1988 for its standard world maps, replacing the Van der Grinten projection. It was featured prominently in National Geographic atlases and educational materials throughout the late 20th century. In 1998, the NGS replaced it with the Winkel Tripel projection, citing further reduction of polar distortion. Today it remains widely used by the CIA World Factbook and the European Centre for Disease Prevention and Control (ECDC) for disease mapping.`,
-    construction: `The Robinson projection is defined by a look-up table of 19 values at 5° latitude intervals (0° to 90°), with two columns: X (parallel length ratio relative to equator) and Y (distance from equator normalized to equator length). The table was derived empirically by Robinson to produce a visually pleasing result. Intermediate values between the tabulated latitudes are computed by interpolation — typically cubic spline or Aitken interpolation. The forward projection equations are then:\n\n  x = 0.8487 · R · X(φ) · (λ − λ₀)\n  y = 1.3523 · R · Y(φ)\n\nwhere X(φ) and Y(φ) are interpolated from the table.`,
-    math: [
-      { label: "x", formula: "0.8487 · R · X(φ) · (λ − λ₀)" },
-      { label: "y", formula: "1.3523 · R · Y(φ)" },
-      { label: "X(φ)", formula: "Tabulated parallel length ratio (interpolated from 5° table)" },
-      { label: "Y(φ)", formula: "Tabulated parallel distance ratio (interpolated from 5° table)" },
-    ],
-    robinsonTable: [
-      [0,   1.0000, 0.0000], [5,  0.9986, 0.0620], [10, 0.9954, 0.1240],
-      [15,  0.9900, 0.1860], [20, 0.9822, 0.2480], [25, 0.9730, 0.3100],
-      [30,  0.9600, 0.3720], [35, 0.9427, 0.4340], [40, 0.9216, 0.4958],
-      [45,  0.8962, 0.5571], [50, 0.8679, 0.6176], [55, 0.8350, 0.6769],
-      [60,  0.7986, 0.7346], [65, 0.7597, 0.7903], [70, 0.7186, 0.8435],
-      [75,  0.6732, 0.8936], [80, 0.6213, 0.9394], [85, 0.5722, 0.9761],
-      [90,  0.5322, 1.0000],
-    ],
-    formats: {
-      wkt1_html: {
-        label: "WKT-1 (Human-Readable)",
-        description: "OGC Well-Known Text version 1 (ISO 19125), formatted for readability. Used by GDAL, QGIS, and most open-source GIS tools.",
-        content: `PROJCS["World_Robinson",
-  GEOGCS["GCS_WGS_1984",
-    DATUM["D_WGS_1984",
-      SPHEROID["WGS_1984", 6378137.0, 298.257223563]
-    ],
-    PRIMEM["Greenwich", 0.0],
-    UNIT["Degree", 0.0174532925199433]
-  ],
-  PROJECTION["Robinson"],
-  PARAMETER["Central_Meridian", 0.0],
-  PARAMETER["False_Easting", 0.0],
-  PARAMETER["False_Northing", 0.0],
-  UNIT["Meter", 1.0]
-]`,
-        humanReadable: [
-          ["Projection Name", "World Robinson"],
-          ["Geographic CRS", "GCS_WGS_1984"],
-          ["Datum", "D_WGS_1984"],
-          ["Spheroid", "WGS_1984 — semi-major 6,378,137 m, inv. flat. 298.257223563"],
-          ["Prime Meridian", "Greenwich (0°)"],
-          ["Projection Method", "Robinson (pseudocylindrical, compromise)"],
-          ["Central Meridian", "0° (Greenwich)"],
-          ["False Easting", "0.0 m"],
-          ["False Northing", "0.0 m"],
-          ["Linear Unit", "Meter (1.0)"],
-          ["Angular Unit", "Degree (0.01745329…)"],
-        ]
-      },
-      wkt1_ogc: {
-        label: "OGC WKT-1",
-        description: "Machine-readable OGC WKT-1 (ISO 19125 / GDAL format). Single-line. Paste into GDAL, QGIS, or any ISO 19125-compatible tool.",
-        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`
-      },
-      wkt2_html: {
-        label: "WKT-2 (Human-Readable)",
-        description: "ISO 19162:2019 Well-Known Text version 2, formatted for readability.",
-        content: `PROJCRS["World Robinson",
-  BASEGEOGCRS["WGS 84",
-    DATUM["World Geodetic System 1984",
-      ELLIPSOID["WGS 84", 6378137, 298.257223563,
-        LENGTHUNIT["metre", 1]]
-    ],
-    PRIMEM["Greenwich", 0,
-      ANGLEUNIT["degree", 0.0174532925199433]],
-    ID["EPSG", 4326]
-  ],
-  CONVERSION["Robinson",
-    METHOD["Robinson",
-      ID["PROJ", "robin"]],
-    PARAMETER["Longitude of natural origin", 0,
-      ANGLEUNIT["degree", 0.0174532925199433],
-      ID["EPSG", 8802]],
-    PARAMETER["False easting", 0,
-      LENGTHUNIT["metre", 1],
-      ID["EPSG", 8806]],
-    PARAMETER["False northing", 0,
-      LENGTHUNIT["metre", 1],
-      ID["EPSG", 8807]]
-  ],
-  CS[Cartesian, 2],
-    AXIS["(E)", east,
-      ORDER[1],
-      LENGTHUNIT["metre", 1]],
-    AXIS["(N)", north,
-      ORDER[2],
-      LENGTHUNIT["metre", 1]]
-]`,
-        humanReadable: [
-          ["Standard", "ISO 19162:2019 (WKT-2)"],
-          ["Projected CRS Name", "World Robinson"],
-          ["Base Geographic CRS", "WGS 84 (EPSG:4326)"],
-          ["Ellipsoid", "WGS 84 — 6,378,137 m, inv. flat. 298.257223563"],
-          ["Prime Meridian", "Greenwich (0°)"],
-          ["Conversion Method", "Robinson (PROJ alias: robin)"],
-          ["Central Meridian", "0° (Greenwich) [EPSG:8802]"],
-          ["False Easting", "0 m [EPSG:8806]"],
-          ["False Northing", "0 m [EPSG:8807]"],
-          ["Coordinate System", "Cartesian 2D"],
-          ["Axis 1", "Easting (E), east, Order 1"],
-          ["Axis 2", "Northing (N), north, Order 2"],
-          ["Linear Unit", "Metre (1.0)"],
-        ]
-      },
-      wkt2_ogc: {
-        label: "OGC WKT-2",
-        description: "Machine-readable ISO 19162:2019 WKT-2. Compatible with PROJ 6+, GDAL 3+, and modern GIS software.",
-        content: `PROJCRS["World Robinson",BASEGEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Robinson",METHOD["Robinson",ID["PROJ","robin"]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]]]`
-      },
-      esri_wkt: {
-        label: "ESRI WKT",
-        description: "✅ Fully supported in the ESRI Projection Engine as WKID 54030 (World_Robinson). Works correctly in ArcGIS Pro and ArcMap.",
-        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
-        humanReadable: [
-          ["Format", "ESRI WKT"],
-          ["ESRI WKID", "54030"],
-          ["Projection Name", "World_Robinson"],
-          ["Geographic CRS", "GCS_WGS_1984"],
-          ["Datum", "D_WGS_1984"],
-          ["Spheroid", "WGS_1984 — 6,378,137.0 m, inv. flat. 298.257223563"],
-          ["Prime Meridian", "Greenwich (0.0°)"],
-          ["Projection Method", "Robinson"],
-          ["Central_Meridian", "0.0°"],
-          ["False_Easting", "0.0 m"],
-          ["False_Northing", "0.0 m"],
-          ["Linear Unit", "Meter (1.0)"],
-          ["ArcGIS Pro", "✅ Fully supported (WKID 54030)"],
-          ["ArcMap", "✅ Fully supported (WKID 54030)"],
-        ]
-      },
-      prj: {
-        label: ".PRJ",
-        description: "✅ Shapefile projection file (.prj). Works correctly in ArcGIS Pro, ArcMap, QGIS, GDAL, and all major GIS applications. Robinson is fully registered in the ESRI Projection Engine (WKID 54030).",
-        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
-        filename: "robinson.prj",
-        esriCompatible: true,
-        esriWKID: 54030
-      },
-      proj: {
-        label: "PROJ String",
-        description: "PROJ 4/6/9 projection string. Natively supported via the +proj=robin alias. Works in GDAL, QGIS, Python (pyproj), R (sf), and command-line tools.",
-        content: `+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0 +units=m +no_defs`
-      },
-      json: {
-        label: "JSON / GeoJSON CRS",
-        description: "Structured JSON CRS definition with full projection metadata and GeoJSON-compatible CRS object.",
-        content: `{
-  "type": "ProjectedCRS",
-  "name": "World Robinson",
-  "id": {
-    "authority": "ESRI",
-    "code": 54030
-  },
-  "baseGeographicCRS": {
-    "type": "GeographicCRS",
-    "name": "WGS 84",
-    "datum": {
-      "type": "GeodeticReferenceFrame",
-      "name": "World Geodetic System 1984",
-      "ellipsoid": {
-        "name": "WGS 84",
-        "semiMajorAxis": 6378137.0,
-        "inverseFlattening": 298.257223563
-      }
-    },
-    "primeMeridian": { "name": "Greenwich", "longitude": 0 },
-    "coordinateSystem": {
-      "subtype": "ellipsoidal",
-      "axis": [
-        { "name": "Geodetic latitude",  "abbreviation": "Lat", "direction": "north", "unit": "degree" },
-        { "name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east",  "unit": "degree" }
-      ]
-    }
-  },
-  "conversion": {
-    "name": "Robinson",
-    "method": { "name": "Robinson", "projAlias": "robin" },
-    "parameters": [
-      { "name": "Longitude of natural origin", "value": 0, "unit": "degree" },
-      { "name": "False easting",               "value": 0, "unit": "metre"  },
-      { "name": "False northing",              "value": 0, "unit": "metre"  }
-    ]
-  },
-  "coordinateSystem": {
-    "subtype": "Cartesian",
-    "axis": [
-      { "name": "Easting",  "abbreviation": "E", "direction": "east",  "unit": "metre" },
-      { "name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre" }
-    ]
-  },
-  "projString": "+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0",
-  "metadata": {
-    "inventor": "Arthur H. Robinson",
-    "yearInvented": 1963,
-    "commissionedBy": "Rand McNally",
-    "formulation": "Tabular (empirically derived lookup table, 5° intervals)",
-    "classification": ["pseudocylindrical", "compromise"],
-    "domain": "World",
-    "conformal": false,
-    "equalArea": false,
-    "equidistant": false,
-    "esriWKID": 54030,
-    "epsg": null,
-    "projUrl": "https://proj.org/en/stable/operations/projections/robin.html",
-    "wikiUrl": "https://en.wikipedia.org/wiki/Robinson_projection"
-  }
-}`
-      }
-    },
-    references: [
-      {
-        text: "Robinson, A.H. (1974). A New Map Projection: Its Development and Characteristics. International Yearbook of Cartography, Vol. 14, pp. 145–155.",
-        url: "https://en.wikipedia.org/wiki/Robinson_projection"
-      },
-      {
-        text: "Snyder, J.P. (1993). Flattening the Earth: 2000 Years of Map Projections. Univ. of Chicago Press. pp. 214–216.",
-        url: "https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html"
-      },
-      {
-        text: "Snyder, J.P. & Voxland, P.M. (1989). An Album of Map Projections. USGS PP 1453. pp. 82–83.",
-        url: "https://pubs.usgs.gov/pp/1453/report.pdf"
-      },
-      {
-        text: "Ipbuker, C. (2005). A Computational Approach to the Robinson Projection. Survey Review, 38(297), 204–217.",
-        url: "https://doi.org/10.1179/sre.2005.38.297.204"
-      },
-      {
-        text: "PROJ Contributors (2025). Robinson — PROJ 9.7.1 Documentation.",
-        url: "https://proj.org/en/stable/operations/projections/robin.html"
-      }
-    ],
-    seeAlso: ["Winkel Tripel", "Van der Grinten", "Kavrayskiy VII", "Natural Earth"],
-    wikiUrl: "https://en.wikipedia.org/wiki/Robinson_projection",
-    projUrl: "https://proj.org/en/stable/operations/projections/robin.html",
-  }
+P('mercator','Mercator',['Normal Mercator'],
+  1569,'Gerardus Mercator',3395,54004,'merc','geoMercator',
+  ['cylindrical','conformal'],PROP(1,0,0,0,0),'World (equatorial)',
+  'The most historically significant cylindrical projection. Preserves angles (conformal), making it indispensable for maritime navigation. Produces severe area distortion at high latitudes — Greenland appears as large as Africa.',
+  'Mercator',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Mercator_projection',
+  'https://proj.org/en/stable/operations/projections/merc.html'),
+
+P('web-mercator','Web Mercator',['Pseudo-Mercator','Google Mercator'],
+  2005,'Google',3857,102100,'webmerc','geoMercator',
+  ['cylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'The de facto standard for web mapping (Google Maps, OpenStreetMap, Esri basemaps). Uses a spherical Earth model applied to WGS84 coordinates, making it technically neither conformal nor equal-area.',
+  'Web_Mercator_Auxiliary_Sphere',
+  [{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Web_Mercator_projection',null),
+
+P('transverse-mercator','Transverse Mercator',['Gauss–Krüger','TM'],
+  1822,'Gauss & Krüger',null,null,'tmerc','geoTransverseMercator',
+  ['cylindrical','conformal'],PROP(1,0,0,0,0),'Narrow N–S strips',
+  'A rotated Mercator wrapping a cylinder around a meridian rather than the equator. The mathematical basis of UTM and most national grid systems. Conformal with low distortion near the central meridian.',
+  'Transverse_Mercator',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:0},{name:'Scale_Factor',value:0.9996},{name:'False_Easting',value:500000},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Transverse_Mercator_projection',
+  'https://proj.org/en/stable/operations/projections/tmerc.html'),
+
+P('cassini','Cassini',[],
+  1745,'César-François Cassini de Thury',null,54028,'cass',null,
+  ['cylindrical','equidistant'],PROP(0,0,1,0,0),'Narrow N–S strips',
+  'The transverse analog of the equirectangular projection, wrapping along a meridian. Used historically for topographic surveys in Britain and colonial India. Equidistant along the central meridian.',
+  'Cassini',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Cassini_projection',
+  'https://proj.org/en/stable/operations/projections/cass.html'),
+
+P('hotine-oblique-mercator','Hotine Oblique Mercator',['Oblique Mercator'],
+  1903,'M. Rosenmund / J. Laborde / M. Hotine',null,null,'omerc',null,
+  ['cylindrical','conformal'],PROP(1,0,0,0,0),'Oblique strips',
+  'A conformal cylindrical projection whose central line runs along a great circle that is neither a meridian nor the equator. Used for obliquely oriented regions such as Switzerland, Malaysia, and the Alaska panhandle.',
+  'Hotine_Oblique_Mercator',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Space-oblique_Mercator_projection',
+  'https://proj.org/en/stable/operations/projections/omerc.html'),
+
+P('roussilhe-oblique-stereographic','Roussilhe Oblique Stereographic',[],
+  1922,'Henri Roussilhe',null,null,'somerc',null,
+  ['cylindrical','conformal'],PROP(1,0,0,0,0),'Small regions',
+  'A conformal projection used for small regions at arbitrary orientations. Variant of the oblique stereographic used for some national coordinate systems.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Stereographic_projection',null),
+
+P('gall-stereographic','Gall Stereographic',[],
+  1855,'James Gall',null,null,'gall','geoGall',
+  ['cylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A cylindrical compromise projection with two standard parallels at ±45°. Developed as a more visually balanced alternative to Mercator. Less area distortion near the poles than Mercator.',
+  'Gall_Stereographic',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Gall_stereographic_projection',
+  'https://proj.org/en/stable/operations/projections/gall.html'),
+
+P('miller-cylindrical','Miller Cylindrical',[],
+  1942,'Osborn Maitland Miller',null,54003,'mill','geoMiller',
+  ['cylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A compromise cylindrical projection that modifies Mercator to reduce high-latitude distortion while retaining straight meridians and parallels. Poles are depicted as lines, not points.',
+  'Miller_Cylindrical',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Miller_cylindrical_projection',
+  'https://proj.org/en/stable/operations/projections/mill.html'),
+
+P('lambert-cylindrical-equal-area','Lambert Cylindrical Equal-Area',['Cylindrical Equal-Area'],
+  1772,'Johann Heinrich Lambert',null,null,'cea','geoCylindricalEqualArea',
+  ['cylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'The master cylindrical equal-area projection with the equator as the standard parallel. Correctly preserves area everywhere but compresses features near the poles. Many variants (Behrmann, Gall–Peters, Hobo–Dyer) differ only in their standard parallel.',
+  'Cylindrical_Equal_Area',
+  [{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'sphere','https://en.wikipedia.org/wiki/Lambert_cylindrical_equal-area_projection',
+  'https://proj.org/en/stable/operations/projections/cea.html'),
+
+P('behrmann','Behrmann',[],
+  1910,'Walter Behrmann',null,54017,'cea','geoCylindricalEqualArea',
+  ['cylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A cylindrical equal-area projection with standard parallels at ±30°, reducing polar distortion compared to the Lambert variant. Named after the German cartographer Walter Behrmann.',
+  'Behrmann',
+  [{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:30},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Behrmann_projection',null),
+
+P('hobo-dyer','Hobo–Dyer',[],
+  2002,'Mick Dyer',null,null,'cea','geoCylindricalEqualArea',
+  ['cylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A cylindrical equal-area projection with standard parallels at ±37.5°, commissioned by ODT Inc. Presents a reasonable compromise between polar and equatorial distortion for world maps.',
+  'Hobo_Dyer',
+  [{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:37.5},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Hobo%E2%80%93Dyer_projection',null),
+
+P('gall-peters','Gall–Peters',['Peters Projection'],
+  1855,'James Gall',null,54016,'cea','geoCylindricalEqualArea',
+  ['cylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A cylindrical equal-area projection with standard parallels at ±45°. The Peters version (1973) caused major controversy by promoting it as a politically neutral alternative to Mercator. Correctly preserves area but significantly distorts shapes.',
+  'Gall_Peters',
+  [{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:45},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Gall%E2%80%93Peters_projection',null),
+
+P('central-cylindrical','Central Cylindrical',[],
+  1850,'Unknown',null,null,null,null,
+  ['cylindrical','perspective'],PROP(0,0,0,0,1),'World (not recommended)',
+  'A perspective projection from the Earth\'s center onto a tangent cylinder. Produces extreme area distortion near the poles. Primarily of mathematical interest; rarely used in practice.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Central_cylindrical_projection',null),
+
+/* ─── PSEUDOCYLINDRICAL ────────────────────────────────────────────────────── */
+P('sinusoidal','Sinusoidal',['Sanson–Flamsteed','Mercator Equal-Area'],
+  1600,'Unknown',null,54008,'sinu','geoSinusoidal',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'One of the oldest and simplest pseudocylindrical equal-area projections. Parallels are equally spaced; meridians are sinusoidal curves. Shows little distortion near the central meridian but severe shearing at the margins.',
+  'Sinusoidal',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Sinusoidal_projection',
+  'https://proj.org/en/stable/operations/projections/sinu.html'),
+
+P('mollweide','Mollweide',['Homalographic','Babinet'],
+  1805,'Karl Brandan Mollweide',null,54009,'moll','geoMollweide',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area pseudocylindrical projection with an elliptical outline. Parallels are straight lines of unequal spacing; meridians are elliptical arcs. Widely used in astronomy and thematic mapping.',
+  'Mollweide',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Mollweide_projection',
+  'https://proj.org/en/stable/operations/projections/moll.html'),
+
+P('sinu-mollweide','Sinu-Mollweide',['Philbrick Sinu-Mollweide'],
+  1953,'Allen K. Philbrick',null,null,'sinu_moll','geoSinuMollweide',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A composite equal-area projection that uses the Sinusoidal between ±40° latitude and the Mollweide poleward of that, blended seamlessly at the transition latitudes.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Sinu-Mollweide_projection',null),
+
+P('eckert-ii','Eckert II',[],
+  1906,'Max Eckert-Greifendorff',null,null,'eck2','geoEckert2',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'One of six Eckert pseudocylindrical projections. Has straight-line meridians that meet at the poles and rectilinear poles. The equal-area companion to Eckert I.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Eckert_II_projection',
+  'https://proj.org/en/stable/operations/projections/eck2.html'),
+
+P('eckert-iv','Eckert IV',[],
+  1906,'Max Eckert-Greifendorff',null,54012,'eck4','geoEckert4',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'The most popular of the Eckert projections. Has curved meridians and straight parallels. Equal-area with a pleasant, balanced appearance for world maps.',
+  'Eckert_IV',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Eckert_IV_projection',
+  'https://proj.org/en/stable/operations/projections/eck4.html'),
+
+P('eckert-vi','Eckert VI',[],
+  1906,'Max Eckert-Greifendorff',null,54010,'eck6','geoEckert6',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area pseudocylindrical projection with sinusoidal meridians. The poles are represented as lines half the length of the equator, reducing polar distortion compared to Eckert IV.',
+  'Eckert_VI',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Eckert_VI_projection',
+  'https://proj.org/en/stable/operations/projections/eck6.html'),
+
+P('ortelius-oval','Ortelius Oval',[],
+  1540,'Battista Agnese',null,null,null,'geoOrtelius',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A Renaissance-era compromise projection with a roughly oval outline. The central meridian and parallels are straight lines; other meridians are circular arcs. Used by Ortelius in the 16th century.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Ortelius_oval_projection',null),
+
+P('goode-homolosine','Goode Homolosine',['Interrupted Goode','Homolosine'],
+  1923,'John Paul Goode',null,54052,'igh','geoHomolosine',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World (interrupted)',
+  'A composite equal-area projection combining the Sinusoidal (±40°) and Mollweide (poleward) to minimize distortion. Typically displayed interrupted (like a peeled orange) to reduce shearing.',
+  'Goode_Homolosine',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Goode_homolosine_projection',
+  'https://proj.org/en/stable/operations/projections/igh.html'),
+
+P('kavrayskiy-vii','Kavrayskiy VII',[],
+  1939,'Vladimir V. Kavrayskiy',null,54044,'kav7','geoKavrayskiy7',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A pseudocylindrical compromise projection widely considered to be a visually pleasing world map. Parallels are straight; meridians are curved splines. Well-regarded for minimizing overall distortion.',
+  'Kavrayskiy_VII',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Kavrayskiy_VII_projection',
+  'https://proj.org/en/stable/operations/projections/kav7.html'),
+
+P('robinson','Robinson',['Orthophanic'],
+  1963,'Arthur H. Robinson',null,54030,'robin','geoRobinson',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A tabular pseudocylindrical compromise devised at Rand McNally\'s request. National Geographic\'s standard world map from 1988–1998. Defined by a 19-row empirical lookup table interpolated with cubic splines.',
+  'Robinson',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Robinson_projection',
+  'https://proj.org/en/stable/operations/projections/robin.html'),
+
+P('equal-earth','Equal Earth',[],
+  2018,'B. Šavrič, T. Patterson, B. Jenny',null,null,'eqearth','geoEqualEarth',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A modern equal-area projection (2018) designed as an aesthetically pleasing alternative to the Gall–Peters. Uses a polynomial formula that produces gently curved meridians and an overall oval shape similar to Robinson.',
+  'Equal_Earth',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Equal_Earth_projection',
+  'https://proj.org/en/stable/operations/projections/eqearth.html'),
+
+P('natural-earth','Natural Earth',['Natural Earth I'],
+  2011,'Tom Patterson',null,54078,'natearth','geoNaturalEarth1',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A pseudocylindrical compromise projection designed at the US National Park Service. Produces a pleasant world map appearance with gracefully tapered poles and gently curved meridians.',
+  'Natural_Earth',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Natural_Earth_projection',
+  'https://proj.org/en/stable/operations/projections/natearth.html'),
+
+P('tobler-hyperelliptical','Tobler Hyperelliptical',[],
+  1973,'Waldo R. Tobler',null,null,'tpeqd','geoHyperelliptical',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A family of equal-area projections defined by a superellipse (hyperellipse) outline. The shape of the projection boundary is controlled by a parameter, ranging from the Collignon (rectangular) to the elliptical.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Tobler_hyperelliptical_projection',null),
+
+P('wagner-vi','Wagner VI',[],
+  1932,'K. H. Wagner',null,null,'wag6','geoWagner6',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A pseudocylindrical compromise with a modified Robinson-like appearance. Meridians are straight equally-spaced lines on parallels. One of several projections designed by Karl H. Wagner.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Wagner_VI_projection',
+  'https://proj.org/en/stable/operations/projections/wag6.html'),
+
+P('collignon','Collignon',[],
+  1865,'Édouard Collignon',null,null,'collg','geoCollignon',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area projection with triangular poles and straight converging meridians. Rarely used in practice but notable as an early mathematical construct and for its use in the HEALPix tessellation.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Collignon_projection',
+  'https://proj.org/en/stable/operations/projections/collg.html'),
+
+P('healpix','HEALPix',['Hierarchical Equal Area isoLatitude Pixelization'],
+  1997,'Krzysztof M. Górski',null,null,'healpix','geoHealpix',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World (scientific)',
+  'A pixelization scheme and projection used in astrophysics and cosmology for all-sky maps. Divides the sphere into 12 equal-area base pixels using the Collignon projection at poles and cylindrical equal-area at low latitudes.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/HEALPix',
+  'https://proj.org/en/stable/operations/projections/healpix.html'),
+
+P('boggs-eumorphic','Boggs Eumorphic',[],
+  1929,'Samuel Whittemore Boggs',null,null,'boggs','geoBoggs',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An arithmetic equal-area average of the Sinusoidal and Mollweide projections. The y-coordinate is the mean of the two, giving a smooth compromise between their shapes while preserving area.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Boggs_eumorphic_projection',null),
+
+P('craster-parabolic','Craster Parabolic',['Putnins P4'],
+  1929,'John Craster',null,null,'crast','geoCraster',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area projection with parabolic meridians. Also known as Putnins P4. Produces a moderately round overall shape with less shape distortion at mid-latitudes than some equal-area alternatives.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Craster_parabolic_projection',
+  'https://proj.org/en/stable/operations/projections/crast.html'),
+
+P('mcbryde-thomas-4','McBryde–Thomas Flat-Polar Quartic',[],
+  1949,'F. Webster McBryde & Paul D. Thomas',null,null,'mbtfpq','geoMtFlatPoleQuartic',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area pseudocylindrical projection with quartic meridian curves and flat poles. Used by the US Coast and Geodetic Survey.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/McBryde%E2%80%93Thomas_flat-pole_quartic_projection',
+  'https://proj.org/en/stable/operations/projections/mbtfpq.html'),
+
+P('quartic-authalic','Quartic Authalic',[],
+  1937,'K. Siemon & Oscar S. Adams',null,null,'qua_aut','geoQuarticAuthalic',
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area pseudocylindrical projection with quartic meridian curves. Independently devised by Siemon (1937) and Adams (1944). Produces a moderately compact world map.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Quartic_authalic_projection',
+  'https://proj.org/en/stable/operations/projections/qua_aut.html'),
+
+P('the-times','The Times',[],
+  1965,'John Moir',null,54048,'times','geoTimes',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A compromise pseudocylindrical projection designed for The Times Atlas of the World. Parallels are straight lines with curved meridians; poles are lines. Provides a pleasant visual balance for continental outlines.',
+  'Times',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Times_projection',null),
+
+P('loximuthal','Loximuthal',[],
+  1935,'K. Siemon & Waldo Tobler',null,null,'loxim','geoLoximuthal',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A pseudocylindrical projection where loxodromes (rhumb lines) from the central point appear as straight lines. Combines properties useful for compass-bearing navigation.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Loximuthal_projection',
+  'https://proj.org/en/stable/operations/projections/loxim.html'),
+
+P('atlantis','Atlantis',['Transverse Mollweide','Bartholomew Atlantis'],
+  1948,'John Bartholomew',null,null,'moll',null,
+  ['pseudocylindrical','equal-area'],PROP(0,1,0,0,0),'World (ocean-centered)',
+  'The Mollweide projection rotated 90° to center on the Atlantic Ocean. Used by the Scottish cartographer John Bartholomew to show global shipping routes and the continuity of the world ocean.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Mollweide_projection',null),
+
+/* ─── PSEUDOAZIMUTHAL ──────────────────────────────────────────────────────── */
+P('aitoff','Aitoff',[],
+  1889,'David A. Aitoff',null,54041,'aitoff','geoAitoff',
+  ['pseudoazimuthal','compromise'],PROP(0,0,0,1,0),'World',
+  'A compromise pseudoazimuthal projection derived by doubling the longitude for an azimuthal equidistant hemisphere. Produces an elliptical outline. Predecessor of the Hammer and Winkel Tripel projections.',
+  'Aitoff',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Aitoff_projection',
+  'https://proj.org/en/stable/operations/projections/aitoff.html'),
+
+P('hammer','Hammer',['Hammer–Aitoff'],
+  1892,'Ernst Hammer',null,54040,'hammer','geoHammer',
+  ['pseudoazimuthal','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area modification of the Aitoff projection. Achieved by applying the Lambert azimuthal equal-area formula to a stretched hemisphere. Widely used in astronomy for all-sky survey maps.',
+  'Hammer_Aitoff',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Hammer_projection',
+  'https://proj.org/en/stable/operations/projections/hammer.html'),
+
+P('strebe-1995','Strebe 1995',[],
+  1994,'Daniel Strebe',null,null,null,null,
+  ['pseudoazimuthal','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area compromise projection designed to minimize distortion across the entire map surface. Uses a composite mathematical approach that redistributes distortion away from continental areas.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Strebe_1995_projection',null),
+
+P('winkel-tripel','Winkel Tripel',[],
+  1921,'Oswald Winkel',null,54042,'wintri','geoWinkel3',
+  ['pseudoazimuthal','compromise'],PROP(0,0,0,1,0),'World',
+  'National Geographic\'s standard world map projection since 1998. An arithmetic average of the equirectangular and Aitoff projections. Minimizes overall distortion across the map surface.',
+  'Winkel_Tripel',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Winkel_tripel_projection',
+  'https://proj.org/en/stable/operations/projections/wintri.html'),
+
+P('wagner-vii','Wagner VII',['Hammer–Wagner'],
+  1941,'K. H. Wagner',null,54065,'wag7','geoWagner7',
+  ['pseudoazimuthal','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area pseudoazimuthal projection. A modified Hammer projection with adjusted aspect ratio. Produces a rounded appearance with better shape preservation at mid-latitudes.',
+  'Wagner_VII',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Wagner_VII_projection',
+  'https://proj.org/en/stable/operations/projections/wag7.html'),
+
+P('wiechel','Wiechel',[],
+  1879,'William H. Wiechel',null,null,null,'geoWiechel',
+  ['pseudoazimuthal','equal-area'],PROP(0,1,0,0,0),'Hemisphere',
+  'An equal-area pseudoazimuthal projection for a single hemisphere. Parallels are concentric circles; meridians are curved arcs arranged like a pinwheel. Notable for its decorative appearance.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Wiechel_projection',null),
+
+/* ─── PSEUDOCONIC (Van der Grinten) ────────────────────────────────────────── */
+P('van-der-grinten','Van der Grinten',[],
+  1904,'Alphons J. van der Grinten',null,54029,'vandg','geoVanDerGrinten',
+  ['pseudocylindrical','compromise'],PROP(0,0,0,1,0),'World',
+  'A compromise projection enclosed in a circle. Parallels and meridians are circular arcs. Used by National Geographic before Robinson (1922–1988). Neither equal-area nor conformal.',
+  'Van_der_Grinten_I',null,'WGS84',
+  'https://en.wikipedia.org/wiki/Van_der_Grinten_projection',
+  'https://proj.org/en/stable/operations/projections/vandg.html'),
+
+/* ─── CONIC ────────────────────────────────────────────────────────────────── */
+P('equidistant-conic','Equidistant Conic',['Simple Conic','Ptolemy'],
+  150,'Claudius Ptolemy',null,54027,'eqdc','geoConicEquidistant',
+  ['conic','equidistant'],PROP(0,0,1,0,0),'Mid-latitude regions',
+  'One of the oldest map projections. Meridians are straight lines meeting at a point; parallels are concentric arcs. Equidistant along meridians and the standard parallels.',
+  'Equidistant_Conic',
+  [{name:'Latitude_Of_Origin',value:40},{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:20},{name:'Standard_Parallel_2',value:60},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Equidistant_conic_projection',
+  'https://proj.org/en/stable/operations/projections/eqdc.html'),
+
+P('lambert-conformal-conic','Lambert Conformal Conic',['LCC'],
+  1772,'Johann Heinrich Lambert',null,null,'lcc','geoConicConformal',
+  ['conic','conformal'],PROP(1,0,0,0,0),'Mid-latitude regions',
+  'The standard projection for mid-latitude aeronautical charts and many national coordinate systems. Conformal with two standard parallels. Used by NOAA, FAA, and for US State Plane Coordinate System zones.',
+  'Lambert_Conformal_Conic',
+  [{name:'Latitude_Of_Origin',value:40},{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:20},{name:'Standard_Parallel_2',value:60},{name:'False_Easting',value:0},{name:'False_Northing',value:0},{name:'Scale_Factor',value:1}],
+  'WGS84','https://en.wikipedia.org/wiki/Lambert_conformal_conic_projection',
+  'https://proj.org/en/stable/operations/projections/lcc.html'),
+
+P('albers','Albers Equal-Area Conic',['Albers','AEA'],
+  1805,'Heinrich C. Albers',null,null,'aea','geoAlbers',
+  ['conic','equal-area'],PROP(0,1,0,0,0),'Mid-latitude regions',
+  'The standard equal-area projection for mid-latitude thematic mapping. Correctly preserves area with two standard parallels. Used for the CONUS Albers projection and many national land use maps.',
+  'Albers',
+  [{name:'Latitude_Of_Origin',value:40},{name:'Central_Meridian',value:0},{name:'Standard_Parallel_1',value:20},{name:'Standard_Parallel_2',value:60},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Albers_projection',
+  'https://proj.org/en/stable/operations/projections/aea.html'),
+
+/* ─── PSEUDOCONICAL ────────────────────────────────────────────────────────── */
+P('werner','Werner',[],
+  1500,'Johannes Stabius',null,null,'bonne','geoWerner',
+  ['pseudoconical','equal-area'],PROP(0,1,1,0,0),'World',
+  'A heart-shaped (cordiform) equal-area projection equivalent to Bonne at 90° standard parallel. Used widely in early atlases and praised for its decorative appearance. Equidistant along the central meridian.',
+  null,
+  [{name:'Standard_Parallel_1',value:90},{name:'Central_Meridian',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'sphere','https://en.wikipedia.org/wiki/Werner_projection',
+  'https://proj.org/en/stable/operations/projections/bonne.html'),
+
+P('bonne','Bonne',[],
+  1511,'Bernardus Sylvanus',null,54024,'bonne','geoBonne',
+  ['pseudoconical','equal-area'],PROP(0,1,1,0,0),'World / continental',
+  'A pseudoconical equal-area projection where parallels are concentric circles and meridians are curves keeping equal distance. Used by 18th-century French cartographers for topographic mapping.',
+  'Bonne',
+  [{name:'Standard_Parallel_1',value:45},{name:'Central_Meridian',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Bonne_projection',
+  'https://proj.org/en/stable/operations/projections/bonne.html'),
+
+P('bottomley','Bottomley',[],
+  2003,'Henry Bottomley',null,null,null,'geoBottomley',
+  ['pseudoconical','equal-area'],PROP(0,1,0,0,0),'World',
+  'A modern pseudoconical equal-area projection with a rounded triangular outline. Meridians are elliptical arcs; parallels are concentric circular arcs. Designed as a visually appealing alternative to Bonne.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Bottomley_projection',null),
+
+P('american-polyconic','American Polyconic',['Ordinary Polyconic'],
+  1820,'Ferdinand Rudolph Hassler',null,54021,'poly','geoPolyconic',
+  ['pseudoconical','compromise'],PROP(0,0,0,1,0),'Mid-latitude regions',
+  'An early standard projection of the US Geological Survey in which each parallel is a standard parallel for a cone tangent at that latitude. No distortion along the central meridian.',
+  'Polyconic',null,'WGS84',
+  'https://en.wikipedia.org/wiki/American_polyconic_projection',
+  'https://proj.org/en/stable/operations/projections/poly.html'),
+
+P('rectangular-polyconic','Rectangular Polyconic',[],
+  1853,'US Coast Survey',null,null,'rpoly','geoRectangularPolyconic',
+  ['pseudoconical','compromise'],PROP(0,0,0,1,0),'Small regions',
+  'A modified polyconic projection in which parallels intersect the central meridian at right angles. Used by the US Coast Survey and for some topographic map series.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Polyconic_projection',
+  'https://proj.org/en/stable/operations/projections/rpoly.html'),
+
+P('latitudinally-polyconic','Latitudinally Equal Spaced Polyconic',[],
+  1963,'SBSM China',null,null,null,null,
+  ['pseudoconical','compromise'],PROP(0,0,0,1,0),'China/East Asia',
+  'A modified polyconic projection developed in China with equally spaced parallels. Used for national mapping in China.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Polyconic_projection',null),
+
+P('nicolosi-globular','Nicolosi Globular',['al-Bīrūnī Globular'],
+  1000,'al-Bīrūnī / Giovanni Battista Nicolosi',null,null,'nicol','geoNicolosi',
+  ['pseudoconical','compromise'],PROP(0,0,0,1,0),'Hemisphere',
+  'A pseudoconical globular projection representing a single hemisphere within a circle. Central meridian and equator are straight; other meridians and parallels are circular arcs. Traced to al-Bīrūnī (~1000 CE); popularized by Nicolosi in 1660.',
+  'Nicolosi_Globular',null,'sphere',
+  'https://en.wikipedia.org/wiki/Nicolosi_globular_projection',
+  'https://proj.org/en/stable/operations/projections/nicol.html'),
+
+/* ─── AZIMUTHAL ────────────────────────────────────────────────────────────── */
+P('azimuthal-equidistant','Azimuthal Equidistant',[],
+  1000,'Abū Rayḥān al-Bīrūnī',null,54032,'aeqd','geoAzimuthalEquidistant',
+  ['azimuthal','equidistant'],PROP(0,0,1,0,0),'World / polar',
+  'An azimuthal projection that preserves distances from the center point. Great-circle distances and directions from the center are accurate. Widely used for polar maps and radio propagation maps. Featured on the United Nations emblem.',
+  'Azimuthal_Equidistant',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:90},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection',
+  'https://proj.org/en/stable/operations/projections/aeqd.html'),
+
+P('gnomonic','Gnomonic',[],
+  -585,'Thales of Miletus',null,null,'gnom','geoGnomonic',
+  ['azimuthal','perspective'],PROP(0,0,0,0,1),'Less than hemisphere',
+  'The oldest known map projection, projecting from the Earth\'s center onto a tangent plane. Every great circle appears as a straight line — the only projection with this property. Used for planning great-circle navigation routes.',
+  'Gnomonic',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:90},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'sphere','https://en.wikipedia.org/wiki/Gnomonic_projection',
+  'https://proj.org/en/stable/operations/projections/gnom.html'),
+
+P('lambert-azimuthal-equal-area','Lambert Azimuthal Equal-Area',['LAEA'],
+  1772,'Johann Heinrich Lambert',null,null,'laea','geoAzimuthalEqualArea',
+  ['azimuthal','equal-area'],PROP(0,1,0,0,0),'Hemisphere / polar',
+  'An azimuthal equal-area projection used for continental and hemispheric thematic mapping. Preserves area everywhere while showing correct directions from the center. Used for the EU ETRS89-LAEA coordinate system.',
+  'Lambert_Azimuthal_Equal_Area',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:90},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Lambert_azimuthal_equal-area_projection',
+  'https://proj.org/en/stable/operations/projections/laea.html'),
+
+P('stereographic','Stereographic',[],
+  -150,'Hipparchus',null,null,'stere','geoStereographic',
+  ['azimuthal','conformal'],PROP(1,0,0,0,1),'Hemisphere / polar',
+  'A conformal perspective projection from the antipodal point. Every circle on the sphere maps to a circle or line. Used for polar aeronautical charts, national grids (Netherlands RD New, UPS), and imaging optics.',
+  'Stereographic',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:90},{name:'Scale_Factor',value:1},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'WGS84','https://en.wikipedia.org/wiki/Stereographic_projection',
+  'https://proj.org/en/stable/operations/projections/stere.html'),
+
+P('orthographic','Orthographic',[],
+  -150,'Hipparchus',null,54031,'ortho','geoOrthographic',
+  ['azimuthal','perspective'],PROP(0,0,0,0,1),'Hemisphere',
+  'A perspective projection from infinite distance (parallel projection). Shows the Earth as it would appear from space. Used extensively in astronomy, satellite imagery simulation, and directional signage.',
+  'Orthographic',
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:90},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'sphere','https://en.wikipedia.org/wiki/Orthographic_projection_(cartography)',
+  'https://proj.org/en/stable/operations/projections/ortho.html'),
+
+P('vertical-perspective','Vertical Perspective',['Tilted Perspective'],
+  1740,'Matthias Seutter',null,null,'nsper','geoSatellite',
+  ['azimuthal','perspective'],PROP(0,0,0,0,1),'Less than hemisphere',
+  'A perspective projection from a finite altitude above the Earth\'s surface — simulating a view from a satellite or spacecraft. The visible area is less than a hemisphere depending on altitude.',
+  null,
+  [{name:'Central_Meridian',value:0},{name:'Latitude_Of_Origin',value:0},{name:'False_Easting',value:0},{name:'False_Northing',value:0}],
+  'sphere','https://en.wikipedia.org/wiki/General_Perspective_projection',
+  'https://proj.org/en/stable/operations/projections/nsper.html'),
+
+P('two-point-equidistant','Two-Point Equidistant',[],
+  1919,'Hans Maurer',null,null,'tpeqd','geoTwoPointEquidistant',
+  ['azimuthal','equidistant'],PROP(0,0,1,0,0),'World',
+  'An equidistant projection that preserves distances from two reference points simultaneously. Used for radio wave propagation maps centered on transmitter locations.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Two-point_equidistant_projection',
+  'https://proj.org/en/stable/operations/projections/tpeqd.html'),
+
+P('gott-goldberg-vanderbei','Gott–Goldberg–Vanderbei',[],
+  2021,'J. Richard Gott, David Goldberg, Robert Vanderbei',null,null,'aeqd',null,
+  ['azimuthal','equidistant'],PROP(0,0,1,0,0),'World (double-sided)',
+  'A 2021 double-sided azimuthal equidistant disc projection. One face shows the northern hemisphere; the reverse shows the southern. Minimizes overall map distortion by using both sides of a flat disc.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Gott%E2%80%93Goldberg%E2%80%93Vanderbei_projection',null),
+
+/* ─── OTHER (CONFORMAL/SPECIAL) ────────────────────────────────────────────── */
+P('peirce-quincuncial','Peirce Quincuncial',[],
+  1879,'Charles Sanders Peirce',null,54086,'peirce_q','geoPeirceQuincuncial',
+  ['other','conformal'],PROP(1,0,0,0,0),'World (tileable)',
+  'A conformal projection that maps the sphere into a square. The map tiles seamlessly, making it useful for visualization and has been used for world map tessellations. Invented by the American philosopher-scientist Peirce.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Peirce_quincuncial_projection',
+  'https://proj.org/en/stable/operations/projections/peirce_q.html'),
+
+P('guyou-hemisphere','Guyou Hemisphere-in-a-Square',['Guyou Doubly Periodic'],
+  1887,'Émile Guyou',null,null,null,'geoGuyou',
+  ['other','conformal'],PROP(1,0,0,0,0),'Hemisphere',
+  'A conformal projection mapping a hemisphere into a square. Related to the Peirce quincuncial projection by a 45° rotation. Rarely used in practice but mathematically elegant.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Guyou_hemisphere-in-a-square_projection',null),
+
+P('adams-hemisphere','Adams Hemisphere-in-a-Square',[],
+  1925,'Oscar S. Adams',null,null,null,null,
+  ['other','conformal'],PROP(1,0,0,0,0),'Hemisphere',
+  'A conformal projection mapping a hemisphere into a square. A variant of the Peirce/Guyou family. Historically notable but rarely used in practice.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Adams_hemisphere-in-a-square_projection',null),
+
+/* ─── POLYHEDRAL ────────────────────────────────────────────────────────────── */
+P('lee-conformal-tetrahedron','Lee Conformal World in a Tetrahedron',[],
+  1965,'Laurence Patrick Lee',null,null,null,null,
+  ['polyhedral','conformal'],PROP(1,0,0,0,0),'World',
+  'A conformal projection mapping the world onto an unfolded regular tetrahedron. Combines conformal mapping with polyhedral tessellation. Rarely used cartographically.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Lee_conformal_world_in_a_tetrahedron',null),
+
+P('octant','Octant Projection',['da Vinci Octant'],
+  1514,'Leonardo da Vinci',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'One of the earliest polyhedral projections, attributed to Leonardo da Vinci. The sphere is divided into eight triangular sections (octants) that unfold to form a star pattern.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Octant_projection',null),
+
+P('cahill-butterfly','Cahill Butterfly',[],
+  1909,'Bernard J. S. Cahill',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'A polyhedral projection unfolding the globe into an octahedral butterfly shape. Designed to show the continuity of the landmasses and the world ocean with minimal interruption and distortion.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Cahill_butterfly_projection',null),
+
+P('cahill-keyes','Cahill–Keyes',[],
+  1975,'Bernard Cahill & Gene Keyes',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'An improved version of Cahill\'s butterfly projection by Gene Keyes. Unifies the eight octants with straight-line edges and consistent face alignment for a more practical world map.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Cahill%E2%80%93Keyes_projection',null),
+
+P('waterman-butterfly','Waterman Butterfly',[],
+  1996,'Steve Waterman',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'A polyhedral projection based on the W5 polyhedron. Presents a world map with minimal area and shape distortion, arranged in a butterfly layout that emphasizes the continuity of the ocean.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Waterman_butterfly_projection',null),
+
+P('spherical-cube','Spherical Cube',[],
+  1973,'F. Kenneth Chan & E. M. O\'Neill',null,null,null,null,
+  ['polyhedral','equal-area'],PROP(0,1,0,0,0),'World',
+  'An equal-area polyhedral projection mapping the sphere onto the six faces of a cube. Used in computer graphics and global climate modeling for uniform pixelization of the spherical surface.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Quadrilateralized_spherical_cube',null),
+
+P('dymaxion','Dymaxion',['Fuller Projection','Airocean World'],
+  1943,'R. Buckminster Fuller',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'A polyhedral projection by Buckminster Fuller mapping the globe onto an icosahedron. Can be unfolded in multiple configurations, typically to show the landmasses as a nearly-contiguous island in a single "world ocean."',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Dymaxion_map',null),
+
+P('authagraph','AuthaGraph',[],
+  1999,'Hajime Narukawa',null,null,null,null,
+  ['polyhedral','compromise'],PROP(0,0,0,1,0),'World',
+  'A contemporary polyhedral compromise projection mapping the globe onto a tetrahedron then unfolding onto a rectangle. Winner of the 2016 Good Design Grand Award in Japan. Greatly reduces distortion in polar regions.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/AuthaGraph_projection',null),
+
+P('myriahedral','Myriahedral Projection',[],
+  2008,'Jarke J. van Wijk',null,null,null,null,
+  ['polyhedral','equal-area'],PROP(0,1,0,0,0),'World',
+  'A generalized polyhedral equal-area projection using a polygon mesh (myriahedron) with thousands of faces. The interruptions can be placed to minimize distortion for specific purposes such as showing a contiguous ocean or land.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Myriahedral_projection',null),
+
+/* ─── RETROAZIMUTHAL ────────────────────────────────────────────────────────── */
+P('craig-retroazimuthal','Craig Retroazimuthal',['Mecca Projection'],
+  1909,'James Ireland Craig',null,null,'crast',null,
+  ['retroazimuthal','compromise'],PROP(0,0,0,1,0),'World',
+  'A retroazimuthal projection showing the correct direction from any point to a reference point (traditionally Mecca). Designed for use by Muslims to find the direction of prayer. The map appears heavily distorted away from the reference meridian.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Craig_retroazimuthal_projection',null),
+
+P('hammer-retroazimuthal','Hammer Retroazimuthal',[],
+  1910,'Ernst Hammer',null,null,null,'geoHammerRetroazimuthal',
+  ['retroazimuthal','compromise'],PROP(0,0,0,1,0),'World',
+  'A retroazimuthal projection that preserves directions back to a reference point. Related mathematically to the Hammer projection. The front and back halves of the map overlap, requiring two separate views.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Hammer_retroazimuthal_projection',null),
+
+P('littrow','Littrow',[],
+  1833,'Joseph Johann Littrow',null,null,'larr',null,
+  ['retroazimuthal','conformal'],PROP(1,0,0,0,0),'Hemisphere',
+  'A conformal retroazimuthal projection showing correct directions back to the center. The only known projection that is simultaneously conformal and retroazimuthal. Produces a very distorted world map.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Littrow_projection',null),
+
+/* ─── OTHER ────────────────────────────────────────────────────────────────── */
+P('armadillo','Armadillo',['Raisz Armadillo'],
+  1943,'Erwin Raisz',null,null,null,'geoArmadillo',
+  ['other','compromise'],PROP(0,0,0,1,0),'World',
+  'A novelty world map projection resembling a rolled-up armadillo. Shows the world as if wrapping around a torus. The poles are visible, though distortion is severe near the back of the torus.',
+  null,null,'sphere',
+  'https://en.wikipedia.org/wiki/Armadillo_projection',null),
+
+P('gs50','GS50',[],
+  1982,'John P. Snyder',null,null,'gs50',null,
+  ['other','conformal'],PROP(1,0,0,0,0),'Conterminous US + Alaska + Hawaii',
+  'A conformal projection using a modified stereographic formula designed to show the 50 US states with minimal distortion. Created by USGS cartographer John P. Snyder for a single-sheet map of all 50 states.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/GS50_projection',null),
+
+P('chamberlin-trimetric','Chamberlin Trimetric',[],
+  1946,'Wellman Chamberlin',null,null,null,'geoChamberlin',
+  ['other','compromise'],PROP(0,0,0,1,0),'Continental regions',
+  'A compromise projection that minimizes distortion for a region defined by three control points. Each point on the map is placed as the average of three azimuthal equidistant positions. Used by National Geographic for continental maps.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Chamberlin_trimetric_projection',null),
+
+P('bertin','Bertin 1953',['Jacques Bertin World'],
+  1953,'Jacques Bertin',null,null,null,'geoBertin1953',
+  ['other','compromise'],PROP(0,0,0,1,0),'World',
+  'A compromise world map projection designed by renowned French cartographer and semiólogo Jacques Bertin. Prioritizes legibility of the major landmasses with a distinctive irregular outline.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Bertin_projection',null),
+
+P('hao','Hao Xiaoguang Projection',[],
+  2001,'Hao Xiaoguang',null,null,null,null,
+  ['pseudoconical','compromise'],PROP(0,0,0,1,0),'World',
+  'A pseudoconical compromise projection developed in China as an alternative oriented around the Asian continent. Adopted for some Chinese official world maps.',
+  null,null,'WGS84',
+  'https://en.wikipedia.org/wiki/Hao_Xiaoguang_projection',null),
+
 ];

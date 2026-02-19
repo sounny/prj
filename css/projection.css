@@ -1,0 +1,66 @@
+/* ============================================================
+   PRJ Clearinghouse — Universal Projection Template Styles
+   ============================================================ */
+
+/* ── Compatibility Banners (shared with detail.css) ──────── */
+.compat-warning, .compat-success, .compat-info, .compat-none {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 18px; border-radius: var(--radius-sm);
+  font-size: 0.855rem; line-height: 1.65; margin: 0;
+  border-left: 3px solid;
+}
+.compat-warning { background: rgba(251,191,36,.08); border-color: #fbbf24; color: #f0c060; }
+.compat-success { background: rgba(52,211,153,.07); border-color: #34d399; color: #7ee8c8; }
+.compat-info    { background: rgba(99,130,255,.07); border-color: #6382ff; color: var(--clr-text-2); }
+.compat-none    { background: rgba(148,163,184,.05); border-color: #475569; color: var(--clr-text-3); }
+.compat-icon    { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.compat-warning code, .compat-success code, .compat-info code {
+  background: rgba(255,255,255,.08); padding: 1px 5px;
+  border-radius: 3px; font-size: .85em;
+}
+
+/* ── ESRI support badge inline in title ─────────────────── */
+.esri-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.3);
+  color: #34d399; border-radius: 20px; padding: 3px 10px;
+  font-size: .72rem; font-weight: 600; vertical-align: middle;
+  margin-left: 8px;
+}
+.esri-badge-warn {
+  background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.3);
+  color: #fbbf24;
+}
+
+/* ── Warn color token ────────────────────────────────────── */
+:root { --clr-accent-warn: #fbbf24; }
+
+/* ── Robinson-style lookup table ────────────────────────── */
+.lookup-table-wrap { overflow-x: auto; padding: 0 20px 20px; }
+.lookup-table { width: 100%; border-collapse: collapse;
+  font-size: .8rem; font-family: var(--font-mono); }
+.lookup-table th { color: var(--clr-accent-3); text-align: center;
+  padding: 6px 10px; border-bottom: 1px solid var(--clr-border); font-weight: 500; }
+.lookup-table td { text-align: center; padding: 5px 10px;
+  color: var(--clr-text-2); border-bottom: 1px solid rgba(255,255,255,.04); }
+.lookup-table tr:hover td { background: rgba(99,130,255,.05); color: var(--clr-text); }
+.lookup-table .lat-col { color: var(--clr-accent-2); font-weight: 500; }
+
+/* ── Blockquote ──────────────────────────────────────────── */
+.proj-blockquote {
+  border-left: 3px solid var(--clr-accent); padding: 0 0 0 16px;
+  margin: 20px 0; color: var(--clr-text-2); font-style: italic;
+}
+.proj-blockquote footer {
+  margin-top: 8px; font-size: .85rem;
+  color: var(--clr-text-3); font-style: normal;
+}
+
+/* ── "No PROJ support" placeholder preview ──────────────── */
+.preview-no-support {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 280px; gap: 12px;
+  color: var(--clr-text-3);
+}
+.preview-no-support .no-support-icon { font-size: 3rem; opacity: .4; }
+.preview-no-support p { font-size: .85rem; max-width: 340px; text-align: center; }

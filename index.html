@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v4.min.js"></script>
+  <script src="js/projection.js" defer></script>
 </head>
 <body>
   <!-- Navigation -->
@@ -39,7 +42,7 @@
         <span class="hero-search-icon">⌕</span>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="hero-stat-num" id="stat-count">2</span><span class="hero-stat-label">Projections</span></div>
+        <div class="hero-stat"><span class="hero-stat-num" id="stat-count">82</span><span class="hero-stat-label">Projections</span></div>
         <div class="hero-stat"><span class="hero-stat-num">7</span><span class="hero-stat-label">Format Types</span></div>
         <div class="hero-stat"><span class="hero-stat-num">Free</span><span class="hero-stat-label">Always Open</span></div>
       </div>
@@ -51,12 +54,18 @@
     <div class="container filter-inner">
       <div class="filter-chips" id="filter-chips">
         <button class="chip chip-active" data-filter="all">All</button>
-        <button class="chip" data-filter="globular">Globular</button>
+        <button class="chip" data-filter="cylindrical">Cylindrical</button>
+        <button class="chip" data-filter="pseudocylindrical">Pseudocylindrical</button>
+        <button class="chip" data-filter="azimuthal">Azimuthal</button>
+        <button class="chip" data-filter="pseudoazimuthal">Pseudoazimuthal</button>
+        <button class="chip" data-filter="conic">Conic</button>
         <button class="chip" data-filter="pseudoconical">Pseudoconical</button>
-        <button class="chip" data-filter="compromise">Compromise</button>
+        <button class="chip" data-filter="polyhedral">Polyhedral</button>
+        <button class="chip" data-filter="retroazimuthal">Retroazimuthal</button>
         <button class="chip" data-filter="conformal">Conformal</button>
         <button class="chip" data-filter="equal-area">Equal-Area</button>
         <button class="chip" data-filter="equidistant">Equidistant</button>
+        <button class="chip" data-filter="compromise">Compromise</button>
       </div>
       <div class="sort-wrap">
         <label for="sort-select" class="sort-label">Sort:</label>

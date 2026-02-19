@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Projection — PRJ CRS Clearinghouse</title>
+  <meta name="description" id="page-desc" content="GIS projection reference: WKT, PROJ string, .prj file, and interactive D3 preview." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/detail.css" />
+  <link rel="stylesheet" href="css/projection.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v4.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+</head>
+<body>
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon">⬡</span>
+        <span class="nav-logo-text">PRJ</span>
+        <span class="nav-logo-sub">CRS Clearinghouse</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Browse</a>
+        <a href="index.html#about" class="nav-link">About</a>
+        <a href="https://github.com/sounny/prj" class="nav-link nav-link-gh" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero — filled by JS -->
+  <header class="detail-hero" id="proj-hero">
+    <div class="container">
+      <div class="detail-breadcrumb" id="proj-breadcrumb">
+        <a href="index.html">Browse</a> › <span id="proj-type-crumb">—</span> › <span id="proj-name-crumb">—</span>
+      </div>
+      <div class="detail-title-row">
+        <div>
+          <h1 class="detail-title" id="proj-title">Loading…</h1>
+          <p class="detail-subtitle" id="proj-subtitle"></p>
+          <div class="detail-tags" id="proj-tags"></div>
+          <div class="detail-actions" id="proj-actions"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container detail-layout">
+    <!-- Main -->
+    <div class="detail-main">
+
+      <!-- D3 Preview -->
+      <div class="preview-panel" id="preview-panel">
+        <div class="preview-header">
+          <h3>Interactive Projection Preview</h3>
+          <div class="preview-controls" id="preview-controls">
+            <button class="preview-btn active" id="btn-world" onclick="setView('world')">World</button>
+            <button class="preview-btn" id="btn-tissot" onclick="toggleTissot()">Tissot</button>
+          </div>
+        </div>
+        <svg id="main-preview" class="preview-canvas" viewBox="-560 -300 1120 600" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="distortion-legend">
+          <span>Distortion:</span>
+          <div class="legend-gradient"></div>
+          <span>Low → High</span>
+          <span style="margin-left:16px;color:rgba(99,130,255,0.6)">● Tissot Indicatrix at 30° intervals</span>
+        </div>
+        <div class="preview-caption" id="preview-caption">D3.js interactive preview</div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid" id="info-grid"></div>
+
+      <!-- Format Tabs -->
+      <div class="format-section">
+        <h2>Projection Definitions</h2>
+        <div class="tab-bar" id="tab-bar" role="tablist"></div>
+        <div class="tab-content" id="tab-content"></div>
+      </div>
+
+      <!-- Prose Sections -->
+      <div id="prose-sections"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="detail-sidebar">
+      <div class="sidebar-card">
+        <h3>Downloads</h3>
+        <div class="download-list" id="download-list"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Key Parameters</h3>
+        <div class="sidebar-dl" id="key-params"></div>
+      </div>
+      <div class="sidebar-card" id="refs-card">
+        <h3>References</h3>
+        <ul class="ref-list" id="refs-list"></ul>
+      </div>
+      <div class="sidebar-card" id="see-also-card">
+        <h3>See Also</h3>
+        <ul class="ref-list" id="see-also-list"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>PRJ Clearinghouse · <a href="https://sounny.github.io" target="_blank" rel="noopener">sounny.github.io</a> · Open data, open source.</p>
+      <p class="footer-sub">Projection definitions sourced from PROJ, EPSG Registry, and USGS Professional Paper 1453.</p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/projection.js"></script>
+</body>
+</html>
