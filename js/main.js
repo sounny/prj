@@ -122,6 +122,8 @@ function renderCardPreview(proj, svgEl) {
   // For Nicolosi: draw a simple hemisphere outline with graticule arcs
   if (proj.id === 'nicolosi-globular') {
     drawNicolosiPreview(svgEl);
+  } else if (proj.id === 'robinson') {
+    drawRobinsonPreview(svgEl);
   } else {
     drawGenericGlobePreview(svgEl);
   }
@@ -268,6 +270,108 @@ function drawGenericGlobePreview(svgEl) {
     <circle cx="0" cy="0" r="90" fill="#060d1f" stroke="rgba(99,130,255,0.5)" stroke-width="1"/>
     <text x="0" y="5" text-anchor="middle" fill="rgba(99,130,255,0.4)" font-size="11" font-family="JetBrains Mono, monospace">Preview</text>
   `;
+}
+
+function drawRobinsonPreview(svgEl) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 400, H = 240;
+  svgEl.setAttribute('viewBox', `-${W/2} -${H/2} ${W} ${H}`);
+  svgEl.innerHTML = '';
+
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k, v));
+    return e;
+  };
+
+  // Robinson lookup table
+  const ROBIN = [
+    [0,1.0000,0.0000],[5,0.9986,0.0620],[10,0.9954,0.1240],[15,0.9900,0.1860],
+    [20,0.9822,0.2480],[25,0.9730,0.3100],[30,0.9600,0.3720],[35,0.9427,0.4340],
+    [40,0.9216,0.4958],[45,0.8962,0.5571],[50,0.8679,0.6176],[55,0.8350,0.6769],
+    [60,0.7986,0.7346],[65,0.7597,0.7903],[70,0.7186,0.8435],[75,0.6732,0.8936],
+    [80,0.6213,0.9394],[85,0.5722,0.9761],[90,0.5322,1.0000]
+  ];
+
+  function getXY(latDeg) {
+    const abslat = Math.abs(latDeg);
+    const i = Math.min(17, Math.floor(abslat / 5));
+    const t = (abslat - ROBIN[i][0]) / 5;
+    const X = ROBIN[i][1] + t * (ROBIN[i+1 < 19 ? i+1 : 18][1] - ROBIN[i][1]);
+    const Y = ROBIN[i][2] + t * (ROBIN[i+1 < 19 ? i+1 : 18][2] - ROBIN[i][2]);
+    return { X, Y: latDeg < 0 ? -Y : Y };
+  }
+
+  // Scale: fit in viewbox
+  const scale = 82; // tune to fit
+  const project = (lonDeg, latDeg) => {
+    const { X, Y } = getXY(latDeg);
+    const lam = (lonDeg * Math.PI) / 180;
+    return [
+      0.8487 * X * lam * scale,
+      -1.3523 * Y * scale
+    ];
+  };
+
+  // Background
+  svgEl.appendChild(el('rect', { x: -W/2, y: -H/2, width: W, height: H, fill: '#060a12' }));
+
+  // Outline (envelope)
+  const outlinePts = [];
+  for (let lat = 90; lat >= -90; lat -= 2) {
+    const [x,y] = project(-180, lat);
+    outlinePts.push(`${x},${y}`);
+  }
+  for (let lat = -90; lat <= 90; lat += 2) {
+    const [x,y] = project(180, lat);
+    outlinePts.push(`${x},${y}`);
+  }
+  svgEl.appendChild(el('polygon', {
+    points: outlinePts.join(' '),
+    fill: '#060d1f',
+    stroke: 'rgba(99,130,255,0.7)',
+    'stroke-width': '1'
+  }));
+
+  // Graticule — parallels
+  for (let lat = -75; lat <= 75; lat += 15) {
+    const pts = [];
+    for (let lon = -180; lon <= 180; lon += 5) {
+      const [x,y] = project(lon, lat);
+      pts.push(`${x},${y}`);
+    }
+    svgEl.appendChild(el('polyline', {
+      points: pts.join(' '),
+      fill: 'none',
+      stroke: lat === 0 ? 'rgba(99,130,255,0.45)' : 'rgba(99,130,255,0.13)',
+      'stroke-width': lat === 0 ? '0.8' : '0.4'
+    }));
+  }
+
+  // Graticule — meridians
+  for (let lon = -165; lon <= 165; lon += 15) {
+    const pts = [];
+    for (let lat = -90; lat <= 90; lat += 5) {
+      const [x,y] = project(lon, lat);
+      pts.push(`${x},${y}`);
+    }
+    svgEl.appendChild(el('polyline', {
+      points: pts.join(' '),
+      fill: 'none',
+      stroke: lon === 0 ? 'rgba(99,130,255,0.45)' : 'rgba(99,130,255,0.12)',
+      'stroke-width': lon === 0 ? '0.8' : '0.4'
+    }));
+  }
+
+  // Label
+  const lbl = document.createElementNS(ns, 'text');
+  lbl.setAttribute('x', 0); lbl.setAttribute('y', H/2 - 8);
+  lbl.setAttribute('text-anchor', 'middle');
+  lbl.setAttribute('fill', 'rgba(99,130,255,0.5)');
+  lbl.setAttribute('font-size', '9');
+  lbl.setAttribute('font-family', 'JetBrains Mono, monospace');
+  lbl.textContent = '+proj=robin  ·  Robinson (1963)  ·  ESRI 54030';
+  svgEl.appendChild(lbl);
 }
 
 // ── Events ─────────────────────────────────────────────────

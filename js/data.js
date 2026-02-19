@@ -262,5 +262,265 @@ const PROJECTIONS = [
     seeAlso: ["Azimuthal Equidistant", "Stereographic", "Fournier Globular I"],
     wikiUrl: "https://en.wikipedia.org/wiki/Nicolosi_globular_projection",
     projUrl: "https://proj.org/en/stable/operations/projections/nicol.html",
+  },
+
+  // ── Robinson ──────────────────────────────────────────────────────────────
+  {
+    id: "robinson",
+    name: "Robinson",
+    altNames: ["Orthophanic Projection"],
+    year: 1963,
+    inventor: "Arthur H. Robinson",
+    epsg: null,
+    epsgNote: "Not registered in the EPSG dataset. The ESRI authority code 54030 is the de facto standard for the World Robinson CRS.",
+    esriWKID: 54030,
+    esriNote: "Fully supported in ESRI Projection Engine as WKID 54030 (World_Robinson). ArcGIS Pro and ArcMap will correctly apply this projection.",
+    projString: "+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0 +units=m +no_defs",
+    classification: ["pseudocylindrical", "compromise"],
+    properties: {
+      conformal: false,
+      equalArea: false,
+      equidistant: false,
+      compromise: true,
+      hemisphere: false,
+    },
+    domain: "World (whole-globe map)",
+    sphere: "Spherical only (no ellipsoidal form defined in original formulation)",
+    units: "Meters (projected); Degrees (geographic input)",
+    description: "The Robinson projection is a pseudocylindrical world map projection devised by Arthur H. Robinson in 1963. It is a compromise projection, preserving neither conformality nor equal area, but distributing distortions across the map in a visually balanced manner. Meridians curve gently and parallels are straight horizontal lines. The National Geographic Society used it as its standard world map projection from 1988 to 1998.",
+    history: `Arthur H. Robinson developed the projection in 1963 at the request of the Rand McNally cartographic company, which sought a world map projection with a pleasing aesthetic and acceptable distortion characteristics for general-purpose use. Robinson took an unusual approach: rather than beginning with equations, he manually tuned the visual shape of the projection until it looked right, then derived the mathematical table from that result. He published the tabular formulation in 1974.\n\nThe National Geographic Society adopted the Robinson projection in 1988 for its standard world maps, replacing the Van der Grinten projection. It was featured prominently in National Geographic atlases and educational materials throughout the late 20th century. In 1998, the NGS replaced it with the Winkel Tripel projection, citing further reduction of polar distortion. Today it remains widely used by the CIA World Factbook and the European Centre for Disease Prevention and Control (ECDC) for disease mapping.`,
+    construction: `The Robinson projection is defined by a look-up table of 19 values at 5° latitude intervals (0° to 90°), with two columns: X (parallel length ratio relative to equator) and Y (distance from equator normalized to equator length). The table was derived empirically by Robinson to produce a visually pleasing result. Intermediate values between the tabulated latitudes are computed by interpolation — typically cubic spline or Aitken interpolation. The forward projection equations are then:\n\n  x = 0.8487 · R · X(φ) · (λ − λ₀)\n  y = 1.3523 · R · Y(φ)\n\nwhere X(φ) and Y(φ) are interpolated from the table.`,
+    math: [
+      { label: "x", formula: "0.8487 · R · X(φ) · (λ − λ₀)" },
+      { label: "y", formula: "1.3523 · R · Y(φ)" },
+      { label: "X(φ)", formula: "Tabulated parallel length ratio (interpolated from 5° table)" },
+      { label: "Y(φ)", formula: "Tabulated parallel distance ratio (interpolated from 5° table)" },
+    ],
+    robinsonTable: [
+      [0,   1.0000, 0.0000], [5,  0.9986, 0.0620], [10, 0.9954, 0.1240],
+      [15,  0.9900, 0.1860], [20, 0.9822, 0.2480], [25, 0.9730, 0.3100],
+      [30,  0.9600, 0.3720], [35, 0.9427, 0.4340], [40, 0.9216, 0.4958],
+      [45,  0.8962, 0.5571], [50, 0.8679, 0.6176], [55, 0.8350, 0.6769],
+      [60,  0.7986, 0.7346], [65, 0.7597, 0.7903], [70, 0.7186, 0.8435],
+      [75,  0.6732, 0.8936], [80, 0.6213, 0.9394], [85, 0.5722, 0.9761],
+      [90,  0.5322, 1.0000],
+    ],
+    formats: {
+      wkt1_html: {
+        label: "WKT-1 (Human-Readable)",
+        description: "OGC Well-Known Text version 1 (ISO 19125), formatted for readability. Used by GDAL, QGIS, and most open-source GIS tools.",
+        content: `PROJCS["World_Robinson",
+  GEOGCS["GCS_WGS_1984",
+    DATUM["D_WGS_1984",
+      SPHEROID["WGS_1984", 6378137.0, 298.257223563]
+    ],
+    PRIMEM["Greenwich", 0.0],
+    UNIT["Degree", 0.0174532925199433]
+  ],
+  PROJECTION["Robinson"],
+  PARAMETER["Central_Meridian", 0.0],
+  PARAMETER["False_Easting", 0.0],
+  PARAMETER["False_Northing", 0.0],
+  UNIT["Meter", 1.0]
+]`,
+        humanReadable: [
+          ["Projection Name", "World Robinson"],
+          ["Geographic CRS", "GCS_WGS_1984"],
+          ["Datum", "D_WGS_1984"],
+          ["Spheroid", "WGS_1984 — semi-major 6,378,137 m, inv. flat. 298.257223563"],
+          ["Prime Meridian", "Greenwich (0°)"],
+          ["Projection Method", "Robinson (pseudocylindrical, compromise)"],
+          ["Central Meridian", "0° (Greenwich)"],
+          ["False Easting", "0.0 m"],
+          ["False Northing", "0.0 m"],
+          ["Linear Unit", "Meter (1.0)"],
+          ["Angular Unit", "Degree (0.01745329…)"],
+        ]
+      },
+      wkt1_ogc: {
+        label: "OGC WKT-1",
+        description: "Machine-readable OGC WKT-1 (ISO 19125 / GDAL format). Single-line. Paste into GDAL, QGIS, or any ISO 19125-compatible tool.",
+        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`
+      },
+      wkt2_html: {
+        label: "WKT-2 (Human-Readable)",
+        description: "ISO 19162:2019 Well-Known Text version 2, formatted for readability.",
+        content: `PROJCRS["World Robinson",
+  BASEGEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+      ELLIPSOID["WGS 84", 6378137, 298.257223563,
+        LENGTHUNIT["metre", 1]]
+    ],
+    PRIMEM["Greenwich", 0,
+      ANGLEUNIT["degree", 0.0174532925199433]],
+    ID["EPSG", 4326]
+  ],
+  CONVERSION["Robinson",
+    METHOD["Robinson",
+      ID["PROJ", "robin"]],
+    PARAMETER["Longitude of natural origin", 0,
+      ANGLEUNIT["degree", 0.0174532925199433],
+      ID["EPSG", 8802]],
+    PARAMETER["False easting", 0,
+      LENGTHUNIT["metre", 1],
+      ID["EPSG", 8806]],
+    PARAMETER["False northing", 0,
+      LENGTHUNIT["metre", 1],
+      ID["EPSG", 8807]]
+  ],
+  CS[Cartesian, 2],
+    AXIS["(E)", east,
+      ORDER[1],
+      LENGTHUNIT["metre", 1]],
+    AXIS["(N)", north,
+      ORDER[2],
+      LENGTHUNIT["metre", 1]]
+]`,
+        humanReadable: [
+          ["Standard", "ISO 19162:2019 (WKT-2)"],
+          ["Projected CRS Name", "World Robinson"],
+          ["Base Geographic CRS", "WGS 84 (EPSG:4326)"],
+          ["Ellipsoid", "WGS 84 — 6,378,137 m, inv. flat. 298.257223563"],
+          ["Prime Meridian", "Greenwich (0°)"],
+          ["Conversion Method", "Robinson (PROJ alias: robin)"],
+          ["Central Meridian", "0° (Greenwich) [EPSG:8802]"],
+          ["False Easting", "0 m [EPSG:8806]"],
+          ["False Northing", "0 m [EPSG:8807]"],
+          ["Coordinate System", "Cartesian 2D"],
+          ["Axis 1", "Easting (E), east, Order 1"],
+          ["Axis 2", "Northing (N), north, Order 2"],
+          ["Linear Unit", "Metre (1.0)"],
+        ]
+      },
+      wkt2_ogc: {
+        label: "OGC WKT-2",
+        description: "Machine-readable ISO 19162:2019 WKT-2. Compatible with PROJ 6+, GDAL 3+, and modern GIS software.",
+        content: `PROJCRS["World Robinson",BASEGEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Robinson",METHOD["Robinson",ID["PROJ","robin"]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]]]`
+      },
+      esri_wkt: {
+        label: "ESRI WKT",
+        description: "✅ Fully supported in the ESRI Projection Engine as WKID 54030 (World_Robinson). Works correctly in ArcGIS Pro and ArcMap.",
+        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
+        humanReadable: [
+          ["Format", "ESRI WKT"],
+          ["ESRI WKID", "54030"],
+          ["Projection Name", "World_Robinson"],
+          ["Geographic CRS", "GCS_WGS_1984"],
+          ["Datum", "D_WGS_1984"],
+          ["Spheroid", "WGS_1984 — 6,378,137.0 m, inv. flat. 298.257223563"],
+          ["Prime Meridian", "Greenwich (0.0°)"],
+          ["Projection Method", "Robinson"],
+          ["Central_Meridian", "0.0°"],
+          ["False_Easting", "0.0 m"],
+          ["False_Northing", "0.0 m"],
+          ["Linear Unit", "Meter (1.0)"],
+          ["ArcGIS Pro", "✅ Fully supported (WKID 54030)"],
+          ["ArcMap", "✅ Fully supported (WKID 54030)"],
+        ]
+      },
+      prj: {
+        label: ".PRJ",
+        description: "✅ Shapefile projection file (.prj). Works correctly in ArcGIS Pro, ArcMap, QGIS, GDAL, and all major GIS applications. Robinson is fully registered in the ESRI Projection Engine (WKID 54030).",
+        content: `PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Robinson"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
+        filename: "robinson.prj",
+        esriCompatible: true,
+        esriWKID: 54030
+      },
+      proj: {
+        label: "PROJ String",
+        description: "PROJ 4/6/9 projection string. Natively supported via the +proj=robin alias. Works in GDAL, QGIS, Python (pyproj), R (sf), and command-line tools.",
+        content: `+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0 +units=m +no_defs`
+      },
+      json: {
+        label: "JSON / GeoJSON CRS",
+        description: "Structured JSON CRS definition with full projection metadata and GeoJSON-compatible CRS object.",
+        content: `{
+  "type": "ProjectedCRS",
+  "name": "World Robinson",
+  "id": {
+    "authority": "ESRI",
+    "code": 54030
+  },
+  "baseGeographicCRS": {
+    "type": "GeographicCRS",
+    "name": "WGS 84",
+    "datum": {
+      "type": "GeodeticReferenceFrame",
+      "name": "World Geodetic System 1984",
+      "ellipsoid": {
+        "name": "WGS 84",
+        "semiMajorAxis": 6378137.0,
+        "inverseFlattening": 298.257223563
+      }
+    },
+    "primeMeridian": { "name": "Greenwich", "longitude": 0 },
+    "coordinateSystem": {
+      "subtype": "ellipsoidal",
+      "axis": [
+        { "name": "Geodetic latitude",  "abbreviation": "Lat", "direction": "north", "unit": "degree" },
+        { "name": "Geodetic longitude", "abbreviation": "Lon", "direction": "east",  "unit": "degree" }
+      ]
+    }
+  },
+  "conversion": {
+    "name": "Robinson",
+    "method": { "name": "Robinson", "projAlias": "robin" },
+    "parameters": [
+      { "name": "Longitude of natural origin", "value": 0, "unit": "degree" },
+      { "name": "False easting",               "value": 0, "unit": "metre"  },
+      { "name": "False northing",              "value": 0, "unit": "metre"  }
+    ]
+  },
+  "coordinateSystem": {
+    "subtype": "Cartesian",
+    "axis": [
+      { "name": "Easting",  "abbreviation": "E", "direction": "east",  "unit": "metre" },
+      { "name": "Northing", "abbreviation": "N", "direction": "north", "unit": "metre" }
+    ]
+  },
+  "projString": "+proj=robin +lon_0=0 +R=6371000 +x_0=0 +y_0=0",
+  "metadata": {
+    "inventor": "Arthur H. Robinson",
+    "yearInvented": 1963,
+    "commissionedBy": "Rand McNally",
+    "formulation": "Tabular (empirically derived lookup table, 5° intervals)",
+    "classification": ["pseudocylindrical", "compromise"],
+    "domain": "World",
+    "conformal": false,
+    "equalArea": false,
+    "equidistant": false,
+    "esriWKID": 54030,
+    "epsg": null,
+    "projUrl": "https://proj.org/en/stable/operations/projections/robin.html",
+    "wikiUrl": "https://en.wikipedia.org/wiki/Robinson_projection"
+  }
+}`
+      }
+    },
+    references: [
+      {
+        text: "Robinson, A.H. (1974). A New Map Projection: Its Development and Characteristics. International Yearbook of Cartography, Vol. 14, pp. 145–155.",
+        url: "https://en.wikipedia.org/wiki/Robinson_projection"
+      },
+      {
+        text: "Snyder, J.P. (1993). Flattening the Earth: 2000 Years of Map Projections. Univ. of Chicago Press. pp. 214–216.",
+        url: "https://press.uchicago.edu/ucp/books/book/chicago/F/bo3632853.html"
+      },
+      {
+        text: "Snyder, J.P. & Voxland, P.M. (1989). An Album of Map Projections. USGS PP 1453. pp. 82–83.",
+        url: "https://pubs.usgs.gov/pp/1453/report.pdf"
+      },
+      {
+        text: "Ipbuker, C. (2005). A Computational Approach to the Robinson Projection. Survey Review, 38(297), 204–217.",
+        url: "https://doi.org/10.1179/sre.2005.38.297.204"
+      },
+      {
+        text: "PROJ Contributors (2025). Robinson — PROJ 9.7.1 Documentation.",
+        url: "https://proj.org/en/stable/operations/projections/robin.html"
+      }
+    ],
+    seeAlso: ["Winkel Tripel", "Van der Grinten", "Kavrayskiy VII", "Natural Earth"],
+    wikiUrl: "https://en.wikipedia.org/wiki/Robinson_projection",
+    projUrl: "https://proj.org/en/stable/operations/projections/robin.html",
   }
 ];
