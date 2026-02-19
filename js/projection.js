@@ -426,13 +426,13 @@ function renderPreview(p) {
   projection.translate([0, 0]);
   // Scale heuristics by type
   const types = p.classification || [];
-  let scale = 145;
-  if (types.includes('azimuthal') || types.includes('pseudoazimuthal')) scale = 160;
-  if (types.includes('conic') || types.includes('pseudoconic') || types.includes('pseudoconical')) scale = 120;
+  let scale = 170;
+  if (types.includes('azimuthal') || types.includes('pseudoazimuthal')) scale = 180;
+  if (types.includes('conic') || types.includes('pseudoconic') || types.includes('pseudoconical')) scale = 140;
   try { projection.scale(scale); } catch(e) {}
 
   const path = d3.geoPath().projection(projection);
-  const g = svg.append('g').attr('transform', `translate(${SVG_W/2},${SVG_H/2})`);
+  const g = svg.append('g'); // Already centered due to viewBox="-560 -300 1120 600"
 
   // Sphere fill
   try {
