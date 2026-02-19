@@ -256,20 +256,25 @@
 
           <!-- ESRI WKT -->
           <div class="tab-pane" id="tab-esri-wkt">
+            <div class="compat-warning">
+              <span class="compat-icon">⚠️</span>
+              <div>
+                <strong>ArcGIS Compatibility Warning</strong> — Nicolosi Globular is <strong>not registered</strong> in the ESRI Projection Engine (PE) database. ArcGIS Pro and ArcMap will <strong>not</strong> recognize <code>PROJECTION["Nicolosi_Globular"]</code> and will silently fall back to Mercator. This string is provided for completeness and for software that accepts freeform WKT. <strong>See the .PRJ tab for workaround steps.</strong>
+              </div>
+            </div>
             <div class="human-readable-block">
-              <p class="tab-desc">ESRI Well-Known Text format, compatible with ArcGIS Pro, ArcMap, and other ESRI products. Note: the Nicolosi Globular method may require a custom projection definition in older ArcGIS versions.</p>
               <table class="hr-table">
-                <tr><td>Format</td><td>ESRI WKT (ArcGIS / ArcPro compatible)</td></tr>
+                <tr><td>Format</td><td>ESRI WKT (Custom / Freeform)</td></tr>
                 <tr><td>Projection Name</td><td>Nicolosi_Globular</td></tr>
                 <tr><td>Geographic CRS</td><td>GCS_Sphere</td></tr>
                 <tr><td>Datum</td><td>D_Sphere</td></tr>
                 <tr><td>Spheroid</td><td>Sphere — 6,371,000.0 m · inv. flat. 0.0</td></tr>
                 <tr><td>Prime Meridian</td><td>Greenwich (0.0°)</td></tr>
-                <tr><td>Central Meridian</td><td>0.0°</td></tr>
-                <tr><td>False Easting</td><td>0.0 m</td></tr>
-                <tr><td>False Northing</td><td>0.0 m</td></tr>
+                <tr><td>Central_Meridian</td><td>0.0°</td></tr>
+                <tr><td>False_Easting</td><td>0.0 m</td></tr>
+                <tr><td>False_Northing</td><td>0.0 m</td></tr>
                 <tr><td>Linear Unit</td><td>Meter (1.0)</td></tr>
-                <tr><td>Compatibility Note</td><td>ArcGIS Pro 2.x+ · ArcMap 10.x (may need custom .prj)</td></tr>
+                <tr><td>ESRI WKID</td><td style="color: var(--clr-accent-warn)">None — not in ESRI PE database</td></tr>
               </table>
             </div>
             <div class="code-block-wrap">
@@ -278,14 +283,48 @@
             </div>
           </div>
 
+
           <!-- PRJ -->
           <div class="tab-pane" id="tab-prj">
+            <div class="compat-warning">
+              <span class="compat-icon">⚠️</span>
+              <div>
+                <strong>ArcGIS Pro / ArcMap — Known Limitation</strong> — This <code>.prj</code> file will <strong>not</strong> apply the correct projection in ArcGIS. Because <code>Nicolosi_Globular</code> is not registered in the ESRI Projection Engine, ArcGIS silently substitutes Mercator. This is not a file error — it is an ESRI software limitation.
+              </div>
+            </div>
+
+            <div class="compat-success">
+              <span class="compat-icon">✅</span>
+              <div>
+                <strong>Recommended: Use QGIS / GDAL</strong> — QGIS (3.x+) and any GDAL-based tool support Nicolosi Globular natively via the PROJ string. In QGIS: <em>Layer → Set CRS → Enter CRS → paste the PROJ string</em> from the PROJ String tab: <code>+proj=nicol +lon_0=0 +R=6371000 +x_0=0 +y_0=0</code>
+              </div>
+            </div>
+
+            <div class="compat-info">
+              <span class="compat-icon">🔧</span>
+              <div>
+                <strong>ArcGIS Pro Workaround</strong><br/>
+                ArcGIS Pro does not have a Nicolosi Globular option in its GUI, but you can achieve the correct output via GDAL/Python (available within ArcGIS Pro's Python environment):
+                <pre class="code-block" style="margin-top: 8px; background: var(--clr-bg);">import arcpy
+from pyproj import Proj, Transformer
+
+# Use pyproj (PROJ 9+) directly — no ESRI PE dependency
+p = Proj(proj='nicol', lon_0=0, R=6371000)
+x, y = p(-90.0, 45.0)  # lon, lat → projected x, y
+print(f"Projected: {x:.2f}, {y:.2f}")
+
+# Or: reproject a shapefile with ogr2ogr (from OSGeo4W shell)
+# ogr2ogr -t_srs "+proj=nicol +lon_0=0 +R=6371000" out.shp in.shp</pre>
+              </div>
+            </div>
+
             <div class="human-readable-block">
-              <p class="tab-desc">Shapefile projection file (<code>.prj</code>) — plain-text WKT-1 stored alongside <code>.shp</code>, <code>.dbf</code>, and <code>.shx</code> files. This file tells GIS software how to interpret the coordinates in your shapefile. Save as <code>nicolosi_globular.prj</code>.</p>
+              <p class="tab-desc">Shapefile projection file (<code>.prj</code>) — plain-text WKT-1 stored alongside <code>.shp</code>, <code>.dbf</code>, and <code>.shx</code> files. Works correctly in QGIS, GDAL, MapInfo, and Global Mapper.</p>
               <table class="hr-table">
                 <tr><td>Filename</td><td>nicolosi_globular.prj</td></tr>
                 <tr><td>Format</td><td>Plain text, WKT-1 (single line, no whitespace)</td></tr>
-                <tr><td>Used by</td><td>ESRI Shapefiles, QGIS, GDAL, MapInfo, Global Mapper</td></tr>
+                <tr><td>Works in</td><td>QGIS 3.x · GDAL 3.x · MapInfo · Global Mapper</td></tr>
+                <tr><td>ArcGIS Pro / ArcMap</td><td style="color: var(--clr-accent-warn)">⚠ Does not apply correctly — use PROJ string instead</td></tr>
                 <tr><td>Encoding</td><td>UTF-8 (ASCII-safe)</td></tr>
               </table>
             </div>
@@ -297,6 +336,7 @@
               <button class="btn btn-primary" onclick="downloadPRJ()">⬇ Download nicolosi_globular.prj</button>
             </div>
           </div>
+
 
           <!-- PROJ String -->
           <div class="tab-pane" id="tab-proj">

@@ -137,7 +137,8 @@ const PROJECTIONS = [
       },
       esri_wkt: {
         label: "ESRI WKT",
-        description: "ESRI Well-Known Text format. Note: This projection is not in the ESRI Projection Engine database and must be defined as a custom projection using the name 'Nicolosi_Globular'.",
+        description: "⚠️ ArcGIS Compatibility Warning: Nicolosi Globular is NOT in the ESRI Projection Engine (PE) database. ArcGIS Pro and ArcMap will NOT recognize the PROJECTION[\"Nicolosi_Globular\"] keyword and will silently fall back to a default projection (typically Mercator). This string is provided for completeness and for use with software that accepts custom WKT. For ArcGIS users, see the workaround instructions in the .PRJ tab below.",
+
         content: `PROJCS["Nicolosi_Globular",GEOGCS["GCS_Sphere",DATUM["D_Sphere",SPHEROID["Sphere",6371000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Nicolosi_Globular"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
         humanReadable: [
           ["Format", "ESRI WKT (Custom)"],
@@ -157,9 +158,11 @@ const PROJECTIONS = [
       },
       prj: {
         label: ".PRJ",
-        description: "Shapefile projection file (.prj) — plain-text WKT-1 used by ESRI shapefiles and many GIS applications.",
+        description: "⚠️ ArcGIS Pro / ArcMap Limitation: ArcGIS will NOT correctly interpret this .prj file. The Nicolosi Globular projection is NOT registered in the ESRI Projection Engine database, so ArcGIS silently falls back to Mercator when it encounters the unrecognized PROJECTION[\"Nicolosi_Globular\"] keyword. This is a known ESRI limitation, not a file error.\n\n✅ Workaround for ArcGIS Pro: (1) In ArcGIS Pro, go to the Map Properties → Coordinate System tab; (2) Click 'Add Coordinate System' → 'Import Coordinate System' and select this .prj file; (3) ArcGIS will import the geographic CRS (GCS_Sphere) correctly, but the projection method will not apply; (4) Instead, use the PROJ string (+proj=nicol +lon_0=0 +R=6371000 +x_0=0 +y_0=0) in the 'Custom Projection' dialog via ArcGIS Pro's 'New Projected Coordinate System' tool.\n\n✅ Recommended Alternative: Use QGIS or any GDAL-based tool, which reads the PROJ string natively and supports Nicolosi Globular (+proj=nicol) out of the box.",
         content: `PROJCS["Nicolosi_Globular",GEOGCS["GCS_Sphere",DATUM["D_Sphere",SPHEROID["Sphere",6371000.0,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Nicolosi_Globular"],PARAMETER["Central_Meridian",0.0],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],UNIT["Meter",1.0]]`,
-        filename: "nicolosi_globular.prj"
+        filename: "nicolosi_globular.prj",
+        esriCompatible: false,
+        esriNote: "Not recognized by ESRI Projection Engine. Use PROJ string in QGIS or GDAL instead."
       },
       proj: {
         label: "PROJ String",
