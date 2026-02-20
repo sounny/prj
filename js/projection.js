@@ -407,7 +407,7 @@ function buildProse(p) {
 
 // ── D3 Preview ────────────────────────────────────────────────────────────────
 let worldData = null;
-let showTissot = false;
+let showTissot = true;
 let currentProj = null;
 const SVG_W = 1120, SVG_H = 600;
 
@@ -570,6 +570,9 @@ function initPage() {
   buildTabs(p);
   buildProse(p);
   buildSidebar(p);
+
+  // Set initial UI state for Tissot button
+  document.getElementById('btn-tissot').classList.toggle('active', showTissot);
 
   // Load world atlas and render
   if (typeof topojson !== 'undefined') {
