@@ -526,10 +526,13 @@ function copyCode(id) {
 
 // ── Main init ─────────────────────────────────────────────────────────────────
 function initPage() {
+  const titleEl = document.getElementById('proj-title');
+  if (!titleEl) return; // Not on the detail page
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
   if (!id || typeof PROJECTIONS === 'undefined') {
-    document.getElementById('proj-title').textContent = '404 — Projection not found';
+    titleEl.textContent = '404 — Projection not found';
     return;
   }
 

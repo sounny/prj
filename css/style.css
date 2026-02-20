@@ -359,12 +359,20 @@ code, pre {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.tag-globular   { background: rgba(99,130,255,0.15); color: #6382ff; }
-.tag-pseudoconical { background: rgba(167,139,250,0.15); color: #a78bfa; }
-.tag-compromise { background: rgba(52,211,153,0.15); color: #34d399; }
-.tag-conformal  { background: rgba(251,191,36,0.15); color: #fbbf24; }
-.tag-equal-area { background: rgba(239,68,68,0.15); color: #ef4444; }
-.tag-equidistant{ background: rgba(14,165,233,0.15); color: #0ea5e9; }
+.tag-cylindrical        { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-pseudocylindrical  { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.tag-azimuthal          { background: rgba(236,72,153,0.15); color: #f472b6; }
+.tag-pseudoazimuthal    { background: rgba(244,63,94,0.15); color: #fb7185; }
+.tag-conic              { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag-pseudoconical      { background: rgba(20,184,166,0.15); color: #2dd4bf; }
+.tag-polyhedral         { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag-retroazimuthal     { background: rgba(217,119,6,0.15); color: #d97706; }
+.tag-other              { background: rgba(156,163,175,0.15); color: #9ca3af; }
+.tag-compromise         { background: rgba(52,211,153,0.15); color: #34d399; }
+.tag-conformal          { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.tag-equal-area         { background: rgba(239,68,68,0.15); color: #ef4444; }
+.tag-equidistant        { background: rgba(14,165,233,0.15); color: #0ea5e9; }
+.tag-perspective        { background: rgba(168,85,247,0.15); color: #c084fc; }
 .proj-card-name {
   font-size: 1.15rem;
   font-weight: 700;
@@ -383,6 +391,7 @@ code, pre {
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
