@@ -542,7 +542,7 @@ function initPage() {
   _proj = p;
 
   // Meta
-  document.getElementById('page-title').textContent = `${p.name} — PRJ CRS Clearinghouse`;
+  document.getElementById('page-title').textContent = `${p.name} — SOUNNY PRJ`;
   document.getElementById('page-desc').content = `GIS reference for the ${p.name} projection: WKT, PROJ string, .prj download, and D3 interactive map preview.`;
   document.getElementById('proj-title').innerHTML = `${p.name}${p.esriWKID ? `<span class="esri-badge">✅ ESRI ${p.esriWKID}</span>` : ''}`;
   document.getElementById('proj-subtitle').innerHTML = `${p.classification.join(' · ')} · ${p.year < 0 ? Math.abs(p.year)+' BCE' : p.year+' CE'} · PROJ alias: <code>${p.projAlias||'None'}</code>`;
